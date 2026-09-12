@@ -1,0 +1,52 @@
+{
+  "name": "block-string-logo",
+  "version": "0.1.0",
+  "description": "Generate colorful geometric block-letter SVG logos from text.",
+  "keywords": [
+    "block-letters",
+    "cli",
+    "logo",
+    "svg",
+    "typography"
+  ],
+  "homepage": "https://github.com/yuyakinjo/block-string-logo#readme",
+  "bugs": {
+    "url": "https://github.com/yuyakinjo/block-string-logo/issues"
+  },
+  "license": "MIT",
+  "author": "yuyakinjo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuyakinjo/block-string-logo.git"
+  },
+  "bin": {
+    "block-string-logo": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "examples"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
