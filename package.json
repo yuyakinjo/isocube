@@ -20,7 +20,7 @@
     "url": "git+https://github.com/yuyakinjo/block-string-logo.git"
   },
   "bin": {
-    "block-string-logo": "./dist/cli.js"
+    "block-string-logo": "dist/cli.js"
   },
   "files": [
     "dist",
