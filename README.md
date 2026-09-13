@@ -47,12 +47,12 @@ npx isocube --text ABCDEFGHI --break-at 3,6 \
 ## JavaScript API
 
 ```js
-import { generateLogo } from "isocube";
+import { generateLogo } from 'isocube';
 
 const { svg, lines, colors } = generateLogo({
-  text: "SAMPLE",
+  text: 'SAMPLE',
   breakAt: [4],
-  colors: ["#2D00F7", "#E500A4"],
+  colors: ['#2D00F7', '#E500A4'],
 });
 ```
 

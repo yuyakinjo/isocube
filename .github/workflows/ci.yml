@@ -2,6 +2,10 @@ name: ci
 on: [push, pull_request]
 permissions:
   contents: read
+concurrency:
+  # Share a group between push and PR runs for the same source branch.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref && format('refs/heads/{0}', github.head_ref) || github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     runs-on: ubuntu-latest

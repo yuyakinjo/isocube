@@ -18,7 +18,7 @@
   --checker-base: #fbfcfd;
   --checker-cell: #edf1f5;
 }
-:root[data-theme="dark"] {
+:root[data-theme='dark'] {
   color-scheme: dark;
   --text: #e2e8f0;
   --surface: #111827;
@@ -38,13 +38,13 @@
   --checker-base: #182235;
   --checker-cell: #233047;
 }
-:root[data-theme="dark"] .primary {
+:root[data-theme='dark'] .primary {
   background: #0284c7;
 }
-:root[data-theme="dark"] .primary:hover {
+:root[data-theme='dark'] .primary:hover {
   background: #0369a1;
 }
-:root[data-theme="dark"] .terminal {
+:root[data-theme='dark'] .terminal {
   background: var(--panel);
   border: 1px solid #475569;
 }
@@ -74,7 +74,7 @@
   padding: 6px 9px;
   font-size: 11px;
 }
-.theme-options button[aria-pressed="true"] {
+.theme-options button[aria-pressed='true'] {
   background: var(--surface);
   border-color: var(--border);
   color: var(--accent);
@@ -94,7 +94,7 @@
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
+    'Segoe UI',
     sans-serif;
   color: var(--text);
   background: var(--surface);
@@ -188,7 +188,7 @@ main {
   background-size: 44px 44px;
 }
 .hero:before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse at 80% 42%, var(--glow), transparent 50%);
@@ -365,11 +365,11 @@ a:focus-visible {
   display: none;
 }
 .advanced > summary::before {
-  content: "▸";
+  content: '▸';
   color: var(--accent);
 }
 .advanced[open] > summary::before {
-  content: "▾";
+  content: '▾';
 }
 .advanced > summary + * {
   margin-top: 0;
@@ -477,7 +477,7 @@ a:focus-visible {
   border-radius: 4px;
   color: var(--muted);
 }
-.background-options button[aria-pressed="true"] {
+.background-options button[aria-pressed='true'] {
   border-color: var(--border);
   background: var(--surface);
   color: var(--accent);
@@ -490,7 +490,7 @@ a:focus-visible {
   padding: 36px;
   transition: background-color 0.15s;
 }
-.preview[data-background="grid"] {
+.preview[data-background='grid'] {
   background-color: var(--checker-base);
   background-image:
     linear-gradient(45deg, var(--checker-cell) 25%, transparent 25%),
@@ -504,10 +504,10 @@ a:focus-visible {
     8px -8px,
     -8px 0;
 }
-.preview[data-background="light"] {
+.preview[data-background='light'] {
   background: white;
 }
-.preview[data-background="dark"] {
+.preview[data-background='dark'] {
   background: #172033;
 }
 .preview img {

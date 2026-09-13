@@ -78,7 +78,7 @@ jobs:
         with:
           node-version: 26
           registry-url: https://npm.pkg.github.com
-          scope: "@yuyakinjo"
+          scope: '@yuyakinjo'
 
       # GitHub Packages requires a scoped name; publish under it without
       # touching the npmjs.org package name recorded in package.json.
