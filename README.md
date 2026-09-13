@@ -38,25 +38,23 @@ npx isocube --text ABCDEFGHI --break-at 3,6 \
 | `--text`     | Required. 1–256 ASCII letters, digits, or actual newlines. Lowercase becomes uppercase. No spaces or other characters.                                                 |
 | `--break-at` | Optional ascending cumulative character positions, e.g. `4` or `3,6`. Cannot be combined with embedded newlines.                                                       |
 | `--colors`   | Optional comma-separated `#RGB`, `#RRGGBB`, or `rgb(r,g,b)` colors. A short palette repeats across rows. Defaults to independent random RGB values for each character. |
-| `--out`      | SVG output path. Default: `output/logo.svg`. Existing files are overwritten.                                                                                                                           |
+| `--out`      | SVG output path. Default: `output/logo.svg`. Existing files are overwritten.                                                                                           |
 | `--force`    | Accepted for compatibility. Existing files are overwritten by default.                                                                                                 |
 | `--help`     | Show usage.                                                                                                                                                            |
-
 
 ## JavaScript API
 
 ```js
-import { generateLogo } from 'isocube';
+import { generateLogo } from "isocube";
 
 const { svg, lines, colors } = generateLogo({
-  text: 'SAMPLE',
+  text: "SAMPLE",
   breakAt: [4],
-  colors: ['#2D00F7', '#E500A4'],
+  colors: ["#2D00F7", "#E500A4"],
 });
 ```
 
 TypeScript declarations are included.
-
 
 ## License
 

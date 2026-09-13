@@ -1,46 +1,7 @@
 {
   "name": "isocube",
   "version": "2026.913.1405",
-  "author": "yuyakinjo",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yuyakinjo/isocube.git"
-  },
-  "devDependencies": {
-    "@types/node": "^22.20.2",
-    "typescript": "^7.0.2"
-  },
-    "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit && tsc -p web/tsconfig.json",
-    "test": "bun run build && bun test",
-    "ci": "bun run build && bun test && bun run typecheck && bun run build:site",
-    "prepack": "bun run build",
-    "version:next": "bun scripts/next-version.ts",
-    "build:site": "bun scripts/build-site.ts",
-    "dev:site": "bun run build:site && bun scripts/serve-site.ts"
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
-  "bin": {
-    "isocube": "dist/cli.js"
-  },
-  "bugs": {
-    "url": "https://github.com/yuyakinjo/isocube/issues"
-  },
   "description": "Generate colorful geometric block-letter SVG logos from text.",
-  "engines": {
-    "node": ">=26"
-  },
-  "files": [
-    "dist",
-    "examples"
-  ],
-  "homepage": "https://github.com/yuyakinjo/isocube#readme",
   "keywords": [
     "block-letters",
     "cli",
@@ -48,9 +9,54 @@
     "svg",
     "typography"
   ],
+  "homepage": "https://github.com/yuyakinjo/isocube#readme",
+  "bugs": {
+    "url": "https://github.com/yuyakinjo/isocube/issues"
+  },
   "license": "MIT",
+  "author": "yuyakinjo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuyakinjo/isocube.git"
+  },
+  "bin": {
+    "isocube": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "examples"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "publishConfig": {
     "access": "public"
   },
-  "type": "module"
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit && tsc -p web/tsconfig.json",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "test": "bun run build && bun test",
+    "ci": "bun run build && bun test && bun run typecheck && bun run lint && bun run fmt:check && bun run build:site",
+    "prepack": "bun run build",
+    "version:next": "bun scripts/next-version.ts",
+    "build:site": "bun scripts/build-site.ts",
+    "dev:site": "bun run build:site && bun scripts/serve-site.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=26"
+  }
 }
