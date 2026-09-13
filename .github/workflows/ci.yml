@@ -8,7 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: bun install
-      - run: bun run build
-      - run: bun ci
+      - run: bun install --frozen-lockfile
+      - run: bun run ci
       - run: bun pm pack --dry-run

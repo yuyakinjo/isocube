@@ -1,6 +1,6 @@
 {
   "name": "block-string-logo",
-  "version": "0.1.0",
+  "version": "2026.913.936",
   "author": "yuyakinjo",
   "repository": {
     "type": "git",
@@ -47,7 +47,8 @@
     "typecheck": "tsc --noEmit",
     "test": "bun run build && bun test",
     "ci": "bun run build && bun test && bun typecheck",
-    "prepack": "bun run build"
+    "prepack": "bun run build",
+    "version:next": "bun scripts/next-version.ts"
   },
   "type": "module"
 }
