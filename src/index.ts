@@ -2,8 +2,8 @@ import { randomBytes } from 'node:crypto';
 
 interface Glyph {
   width?: number;
-  face?: string;
   marks?: string;
+  outline?: readonly (readonly [number, number])[];
 }
 
 // 100×140 の正面。黒い切れ込みと輪郭で文字を描く。
@@ -12,42 +12,52 @@ const GLYPHS: Record<string, Glyph> = {
   B: { marks: 'M50 30V50 M50 90V110 M80 70H100' },
   C: { marks: 'M55 70H100' },
   D: {
-    face: 'M0 0H82L100 25V115L82 140H0Z',
+    outline: [[0, 0], [82, 0], [100, 25], [100, 115], [82, 140], [0, 140]],
     marks: 'M50 42V98',
   },
   E: { marks: 'M55 45H100 M55 95H100' },
-  F: { face: 'M0 0H100V90H55V140H0Z', marks: 'M55 45H100' },
-  G: { marks: 'M55 45H100 M55 95H75V70H100' },
+  F: { outline: [[0, 0], [100, 0], [100, 90], [55, 90], [55, 140], [0, 140]], marks: 'M55 45H100' },
+  G: { marks: 'M100 45H50V95H75' },
   H: { marks: 'M50 0V45 M50 95V140' },
   I: { width: 70 },
-  J: { marks: 'M45 0V95H25' },
+  J: {
+    outline: [[55, 0], [100, 0], [100, 115], [75, 140], [25, 140], [0, 115], [0, 85], [40, 85], [40, 100], [55, 100]],
+  },
   K: {
-    face: 'M0 0H100L65 70L100 140H0Z',
+    outline: [[0, 0], [100, 0], [65, 70], [100, 140], [0, 140]],
     marks: 'M45 0V35 M45 105V140',
   },
-  L: { face: 'M0 0H55V100H100V140H0Z' },
-  M: { width: 120, marks: 'M40 140V50L60 75L80 50V140' },
+  L: { outline: [[0, 0], [55, 0], [55, 100], [100, 100], [100, 140], [0, 140]] },
+  M: {
+    width: 120,
+    outline: [[15, 0], [45, 0], [60, 85], [75, 0], [105, 0], [120, 140], [0, 140]],
+    marks: 'M30 140V97.5 M90 140V97.5',
+  },
   N: { marks: 'M48 0L56 42 M40 98L48 140' },
   O: { marks: 'M50 42V98' },
-  P: { face: 'M0 0H100V90H50V140H0Z', marks: 'M42 42H62' },
+  P: { outline: [[0, 0], [100, 0], [100, 90], [50, 90], [50, 140], [0, 140]], marks: 'M42 42H62' },
   Q: { marks: 'M50 35V80 M65 105L100 140' },
   R: { marks: 'M42 42H62 M50 95L75 140 M80 75H100' },
-  S: { marks: 'M0 45H60 M40 95H100' },
-  T: { face: 'M0 0H100V40H70V140H30V40H0Z' },
+  S: { marks: 'M40 45H100 M0 95H60' },
+  T: { outline: [[0, 0], [100, 0], [100, 40], [70, 40], [70, 140], [30, 140], [30, 40], [0, 40]] },
   U: { marks: 'M50 0V95' },
-  V: { face: 'M0 0H100L75 140H25Z', marks: 'M50 0V85' },
-  W: { width: 120, marks: 'M40 0V90L60 65L80 90V0' },
-  X: { face: 'M0 0H100L70 70L100 140H0L30 70Z' },
-  Y: { face: 'M0 0H100V60L70 85V140H30V85L0 60Z', marks: 'M50 0V45' },
+  V: { outline: [[0, 0], [100, 0], [75, 140], [25, 140]], marks: 'M50 0V42.5' },
+  W: {
+    width: 120,
+    outline: [[0, 0], [120, 0], [105, 140], [75, 140], [60, 55], [45, 140], [15, 140]],
+    marks: 'M30 0V42.5 M90 0V42.5',
+  },
+  X: { outline: [[0, 0], [100, 0], [70, 70], [100, 140], [0, 140], [30, 70]] },
+  Y: { outline: [[0, 0], [100, 0], [100, 60], [70, 85], [70, 140], [30, 140], [30, 85], [0, 60]], marks: 'M50 0V45' },
   Z: { marks: 'M0 45H60L40 95H100' },
   '0': { marks: 'M50 35V105 M35 85L65 55' },
-  '1': { width: 70, face: 'M0 25L30 0H70V140H20V45H0Z' },
+  '1': { width: 70, outline: [[0, 25], [30, 0], [70, 0], [70, 140], [20, 140], [20, 45], [0, 45]] },
   '2': { marks: 'M0 45H55V70 M45 95H100' },
   '3': { marks: 'M0 45H55 M0 95H55' },
   '4': { marks: 'M50 0V50 M0 100H50V140' },
   '5': { marks: 'M45 45H100 M0 95H55' },
   '6': { marks: 'M55 40H100 M50 90V110' },
-  '7': { face: 'M0 0H100V45L65 140H15L50 45H0Z' },
+  '7': { outline: [[0, 0], [100, 0], [100, 45], [65, 140], [15, 140], [50, 45], [0, 45]] },
   '8': { marks: 'M50 30V50 M50 90V110' },
   '9': { marks: 'M50 30V50 M0 100H50' },
 };
@@ -137,34 +147,40 @@ export function generateLogo(options: LogoOptions): {
   const sides: string[] = [];
   let colorIndex = 0;
   for (const [row, line] of lines.entries()) {
+    const rowSides: string[] = [];
     let x = margin;
     const y = margin + depth + row * height;
     for (const [column, letter] of [...line].entries()) {
       const spec = glyph(letter);
       const w = spec.width ?? 100;
       const color = colors[colorIndex++]!;
-      // 下段には上面を描かず、正面同士を密着させる。
-      if (row === 0) {
-        sides.push(
-          `<path fill="${color}" d="M${x} ${y}l${depth} -${depth}h${w}l-${depth} ${depth}Z"/>`
-        );
-      }
-      if (column === line.length - 1) {
-        sides.push(
-          `<path fill="${color}" d="M${x + w} ${y}l${depth} -${depth}v${height}l-${depth} ${depth}Z"/>`
-        );
-      }
+      // 正面と押し出しに同じ輪郭を使い、切り欠きの内側にも面を付ける。
       // D の斜めの右端に次のブロックをかみ合わせる。
-      const face =
-        spec.face ??
-        (line[column - 1] === 'D'
-          ? `M-18 0H${w}V${height}H-18L0 115V25Z`
-          : `M0 0H${w}V${height}H0Z`);
+      const outline = spec.outline ?? (line[column - 1] === 'D'
+        ? [[-18, 0], [w, 0], [w, height], [-18, height], [0, 115], [0, 25]] as const
+        : [[0, 0], [w, 0], [w, height], [0, height]] as const);
+      const glyphSides: string[] = [];
+      for (const [index, start] of outline.entries()) {
+        const end = outline[(index + 1) % outline.length]!;
+        const dx = end[0] - start[0];
+        const dy = end[1] - start[1];
+        if (dx + dy <= 0) continue;
+        const ax = x + start[0], ay = y + start[1];
+        const bx = x + end[0], by = y + end[1];
+        glyphSides.push(
+          `<path fill="${color}" d="M${ax} ${ay}L${ax + depth} ${ay - depth}L${bx + depth} ${by - depth}L${bx} ${by}Z"/>`
+        );
+      }
+      // 下の行から、行内では左から描き、手前の面で隠れる部分を覆う。
+      // 行幅や列位置で省略しないことで、隣の切り欠きから見える面も残す。
+      rowSides.push(...glyphSides);
+      const face = `M${outline.map(([px, py]) => `${px} ${py}`).join('L')}Z`;
       faces.push(
         `<g transform="translate(${x} ${y})" data-letter="${letter}"><path fill="${color}" d="${face}"/>${spec.marks === undefined ? '' : `<path fill="none" stroke-width="6" d="${spec.marks}"/>`}</g>`
       );
       x += w;
     }
+    sides.unshift(...rowSides);
   }
   const label = lines.join(' / ');
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${totalHeight}" viewBox="0 0 ${width} ${totalHeight}" role="img" aria-labelledby="title"><title id="title">${label}</title><g stroke="#000000" stroke-width="${stroke}" stroke-linejoin="round" stroke-linecap="round">${sides.join('')}${faces.join('')}</g></svg>\n`;

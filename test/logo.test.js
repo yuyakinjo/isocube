@@ -13,6 +13,56 @@ const run = (...args) =>
   spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
 
 describe('generator', () => {
+  // Sample filled polygons in SVG paint order, away from stroked boundaries.
+  const fillAt = (svg, x, y) => {
+    let offsetX = 0, offsetY = 0, fill;
+    const elements = /<g transform="translate\(([-\d.]+) ([-\d.]+)\)"[^>]*>|<\/g>|<path fill="(#[A-F\d]+)" d="([^"]+)"/g;
+    for (const match of svg.matchAll(elements)) {
+      if (match[1] !== undefined) {
+        offsetX = Number(match[1]);
+        offsetY = Number(match[2]);
+      } else if (match[0] === '</g>') {
+        offsetX = offsetY = 0;
+      } else {
+        const coordinates = match[4].match(/-?\d+(?:\.\d+)?/g).map(Number);
+        const points = [];
+        for (let i = 0; i < coordinates.length; i += 2) {
+          points.push([coordinates[i] + offsetX, coordinates[i + 1] + offsetY]);
+        }
+        let inside = false;
+        for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+          const [ax, ay] = points[i], [bx, by] = points[j];
+          if ((ay > y) !== (by > y) && x < (bx - ax) * (y - ay) / (by - ay) + ax) inside = !inside;
+        }
+        if (inside) fill = match[3];
+      }
+    }
+    return fill;
+  };
+  it('keeps lower-row caps visible beyond the row above and hides covered portions', () => {
+    const svg = (text) => generateLogo({ text, colors: ['#FF0000', '#00FF00', '#0000FF'] }).svg;
+    assert.equal(fillAt(svg('A\nAB'), 150, 180), '#0000FF');
+    assert.equal(fillAt(svg('I\nA'), 110, 180), '#00FF00');
+    assert.equal(fillAt(svg('A\nA'), 70, 180), '#FF0000');
+    assert.equal(fillAt(svg('A\nA'), 118, 180), '#FF0000');
+    assert.equal(fillAt(svg('A\nA'), 140, 180), '#00FF00');
+    assert.equal(fillAt(svg('AAA\nI\nA'), 110, 320), '#00FF00');
+    assert.equal(fillAt(svg('I\nW'), 110, 180), '#00FF00');
+    assert.equal(fillAt(svg('I\nL'), 90, 280), '#00FF00');
+  });
+  it('fills exposed sides and notch tops in ST / LO with the owning letter color', () => {
+    const { svg } = generateLogo({ text: 'ST\nLO', colors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00'] });
+    assert.equal(fillAt(svg, 125, 120), '#FF0000'); // S side beside T
+    assert.equal(fillAt(svg, 195, 120), '#00FF00'); // T stem side
+    assert.equal(fillAt(svg, 90, 280), '#0000FF'); // L notch top
+    assert.equal(fillAt(svg, 128, 182), '#FFFF00'); // O cap beneath T's left gap
+    assert.equal(fillAt(svg, 210, 182), '#FFFF00'); // O cap beneath T's right gap
+    assert.equal(fillAt(svg, 160, 182), '#00FF00'); // cap hidden by T
+    assert.equal(fillAt(svg, 230, 120), undefined); // outside T's actual shape
+    const adjacent = generateLogo({ text: 'TL', colors: ['#00FF00', '#0000FF'] }).svg;
+    assert.equal(fillAt(adjacent, 95, 120), '#00FF00');
+    assert.equal(fillAt(adjacent, 190, 140), '#0000FF');
+  });
   it('wraps at cumulative offsets and cycles normalized RGB colors across rows', () => {
     const options = { colors: ['#2d00f7', 'rgb(229,0,164)', '#fb0'] };
     const result = generateLogo({ ...options, text: 'decopin', breakAt: [4] });
@@ -86,7 +136,7 @@ describe('CLI', () => {
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stdout, /block-string-logo --text/);
   });
-  it('writes an SVG, rejects overwrite, and supports --force', async () => {
+  it('writes an SVG, overwrites by default, and accepts --force for compatibility', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'block-string-logo-test-'));
     try {
       const output = join(dir, 'nested', 'logo.svg');
@@ -106,8 +156,12 @@ describe('CLI', () => {
       const before = await readFile(output, 'utf8');
       assert.match(before, /#2D00F7/);
       assert.match(before, /#FFBB00/);
-      assert.equal(run(...args).status, 1);
-      assert.equal(await readFile(output, 'utf8'), before);
+      const replacement = run('--text', 'A', '--colors', '#123456', '--out', output);
+      assert.equal(replacement.status, 0, replacement.stderr);
+      assert.equal(
+        await readFile(output, 'utf8'),
+        generateLogo({ text: 'A', colors: ['#123456'] }).svg
+      );
       assert.equal(run(...args, '--force').status, 0);
       assert.equal(await readFile(output, 'utf8'), before);
     } finally {
