@@ -101,6 +101,33 @@ describe('generator', () => {
       ['ABC', 'DEF', 'GHI']
     );
   });
+  it('reverses the input before wrapping and assigning colors', () => {
+    const colors = ['#f00', '#0f0', '#00f'];
+    for (const [text, breakAt, expected] of [
+      ['hello12', undefined, '21OLLEH'],
+      ['decopin', [4], 'NIPO\nCED'],
+      ['ab\nc12', undefined, '21C\nBA'],
+      ['a', undefined, 'A'],
+    ] as const) {
+      assert.deepEqual(
+        generateLogo({
+          text,
+          reverse: true,
+          breakAt: breakAt === undefined ? undefined : [...breakAt],
+          colors,
+        }),
+        generateLogo({ text: expected, colors })
+      );
+    }
+    assert.deepEqual(
+      generateLogo({ text: 'hello12', reverse: false, colors }),
+      generateLogo({ text: 'hello12', colors })
+    );
+    assert.throws(() =>
+      generateLogo({ text: 'A\nB', reverse: true, breakAt: [1] })
+    );
+    assert.throws(() => generateLogo({ text: 'ß', reverse: true }));
+  });
   it('reproduces random output when the returned colors are reused', () => {
     const first = generateLogo({ text: 'DECOPIN' });
     assert.equal(first.colors.length, 7);
@@ -155,6 +182,32 @@ describe('CLI', () => {
     const result = run('--help');
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stdout, /isocube --text/);
+    assert.match(result.stdout, /--reverse/);
+  });
+  it('writes reversed text with --reverse and applies break positions afterward', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'isocube-test-'));
+    try {
+      const output = join(dir, 'logo.svg');
+      const result = run(
+        '--text',
+        'decopin',
+        '--reverse',
+        '--break-at',
+        '4',
+        '--colors',
+        '#f00,#0f0',
+        '--out',
+        output
+      );
+      assert.equal(result.status, 0, result.stderr);
+      assert.match(result.stdout, /NIPO \/ CED/);
+      assert.equal(
+        await readFile(output, 'utf8'),
+        generateLogo({ text: 'NIPO\nCED', colors: ['#f00', '#0f0'] }).svg
+      );
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
   it('writes an SVG, overwrites by default, and accepts --force for compatibility', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'isocube-test-'));

@@ -16,6 +16,12 @@ npx isocube --text HELLO --out output/hello.svg
 
 ![HELLO in one row with random colors](examples/hello.svg)
 
+Reverse the text: HELLO becomes OLLEH.
+
+```sh
+npx isocube --text HELLO --reverse --out output/reverse.svg
+```
+
 Two rows: hello / world.
 
 ```sh
@@ -48,6 +54,7 @@ npx isocube --text ABCDEFGHIJKLMNOPQRSTUVWXYZ --break-at 7,14,21 \
 | Option       | Description                                                                                                                                                            |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--text`     | Required. 1–256 ASCII letters, digits, or actual newlines. Lowercase becomes uppercase. No spaces or other characters.                                                 |
+| `--reverse`  | Reverse the entire input, including newlines, before applying `--break-at`. Colors follow the resulting character order. Defaults to off.                              |
 | `--break-at` | Optional ascending cumulative character positions, e.g. `4` or `3,6`. Cannot be combined with embedded newlines.                                                       |
 | `--colors`   | Optional comma-separated `#RGB`, `#RRGGBB`, or `rgb(r,g,b)` colors. A short palette repeats across rows. Defaults to independent random RGB values for each character. |
 | `--out`      | SVG output path. Default: `output/logo.svg`. Existing files are overwritten.                                                                                           |
@@ -67,6 +74,8 @@ const { svg, lines, colors } = generateLogo({
 ```
 
 TypeScript declarations are included.
+
+Pass `reverse: true` to reverse the input before applying `breakAt`, just like the CLI's `--reverse` option.
 
 ## License
 

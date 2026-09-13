@@ -10,6 +10,7 @@ try {
     args: process.argv.slice(2),
     options: {
       text: { type: 'string' },
+      reverse: { type: 'boolean', default: false },
       'break-at': { type: 'string' },
       colors: { type: 'string' },
       out: { type: 'string', default: 'output/logo.svg' },
@@ -20,13 +21,14 @@ try {
   });
   if (values.help) {
     console.log(
-      'isocube --text DECOPIN [--break-at 4] [--colors "#2D00F7,#E500A4"] [--out output/logo.svg]\n改行位置: 累積文字数をカンマ区切り。色省略: 文字ごとにランダムRGB。対応: A-Z / 0-9。背景透過SVG。同名の出力ファイルは上書き保存します。'
+      'isocube --text DECOPIN [--reverse] [--break-at 4] [--colors "#2D00F7,#E500A4"] [--out output/logo.svg]\n逆順: --reverse で改行を含む入力全体を逆転してから改行位置を適用。改行位置: 累積文字数をカンマ区切り。色省略: 文字ごとにランダムRGB。対応: A-Z / 0-9。背景透過SVG。同名の出力ファイルは上書き保存します。'
     );
   } else {
     if (values.text === undefined)
       throw new Error('--text を指定してください。');
     const result = generateLogo({
       text: values.text,
+      reverse: values.reverse,
       breakAt: values['break-at']?.split(',').map(Number),
       colors: values.colors?.split(/,(?![^()]*\))/),
     });

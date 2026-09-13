@@ -118,8 +118,25 @@ HELLOWORLD</textarea>
           <details class="advanced">
             <summary>
               Options
-              <span class="optional">Line breaks / File name / Colors</span>
+              <span class="optional"
+                >Reverse / Line breaks / File name / Colors</span
+              >
             </summary>
+            <div>
+              <label for="reverse">
+                <input
+                  id="reverse"
+                  name="reverse"
+                  type="checkbox"
+                  aria-describedby="reverse-help"
+                />
+                Reverse text <code>--reverse</code>
+              </label>
+              <p id="reverse-help" class="help">
+                Reverse the entire input, including newlines, before applying
+                line break positions. HELLO becomes OLLEH.
+              </p>
+            </div>
             <div class="options-grid">
               <div>
                 <label for="break-at">Line breaks <code>--break-at</code></label
@@ -228,7 +245,7 @@ HELLOWORLD</textarea>
               >Enter your text and options, then click “Generate SVG”.</small
             >
           </div>
-          <img id="logo-image" alt="Generated block logo" hidden />
+          <div id="logo-stage" hidden></div>
         </div>
         <div class="download-bar">
           <div>

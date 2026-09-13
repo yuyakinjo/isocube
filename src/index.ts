@@ -184,6 +184,8 @@ const GLYPHS: Record<string, Glyph> = {
 
 export interface LogoOptions {
   text: string;
+  /** 改行を含む入力全体を逆順にしてから breakAt を適用する。 */
+  reverse?: boolean;
   /** 改行を入れる文字数の累積位置。例: [4] → DECO / PIN */
   breakAt?: number[];
   /** #RGB / #RRGGBB / rgb(r,g,b)。足りない場合は先頭から繰り返す。 */
@@ -221,7 +223,8 @@ export function generateLogo(options: LogoOptions): {
   if (!/^[a-z0-9\n]+$/i.test(options.text) || options.text.length > 256) {
     throw new Error('Enter 1–256 ASCII letters, digits, or line breaks.');
   }
-  const text = options.text.toUpperCase();
+  const uppercase = options.text.toUpperCase();
+  const text = options.reverse ? [...uppercase].reverse().join('') : uppercase;
   const breaks = options.breakAt ?? [];
   if (text.includes('\n') && breaks.length > 0) {
     throw new Error(
