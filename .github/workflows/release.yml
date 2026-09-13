@@ -20,6 +20,7 @@ jobs:
     permissions:
       contents: write
       id-token: write
+      packages: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -70,6 +71,25 @@ jobs:
       - name: publish
         if: ${{ !inputs.dry-run }}
         run: npm publish --provenance --access public
+
+      - name: switch registry auth to GitHub Packages
+        if: ${{ !inputs.dry-run }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          registry-url: https://npm.pkg.github.com
+          scope: "@yuyakinjo"
+
+      # GitHub Packages requires a scoped name; publish under it without
+      # touching the npmjs.org package name recorded in package.json.
+      - name: publish to GitHub Packages
+        if: ${{ !inputs.dry-run }}
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: |
+          npm pkg set name=@yuyakinjo/isocube
+          npm publish --registry=https://npm.pkg.github.com
+          npm pkg set name=isocube
 
       - name: record the release
         if: ${{ !inputs.dry-run }}
