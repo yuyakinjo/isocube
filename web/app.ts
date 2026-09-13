@@ -1,9 +1,16 @@
+import { animate, createTimeline, stagger, svg, utils } from 'animejs';
+
 import { generateLogo } from '../src/index.js';
+
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+// createDrawable measures every path, so very long logos fade in as a whole instead.
+const DRAW_LIMIT = 400;
 
 const element = <T extends HTMLElement>(id: string) =>
   document.getElementById(id) as T;
 const form = element<HTMLFormElement>('logo-form');
 const text = element<HTMLTextAreaElement>('text');
+const reverse = element<HTMLInputElement>('reverse');
 const breaks = element<HTMLInputElement>('break-at');
 const colors = element<HTMLInputElement>('colors');
 const filename = element<HTMLInputElement>('filename');
@@ -11,12 +18,54 @@ const error = element<HTMLParagraphElement>('error');
 const status = element<HTMLSpanElement>('status');
 const download = element<HTMLButtonElement>('download');
 const preview = element<HTMLDivElement>('preview');
-const image = element<HTMLImageElement>('logo-image');
+const stage = element<HTMLDivElement>('logo-stage');
 let output: { url: string; filename: string } | undefined;
 const quote = (value: string) => `'${value.replaceAll("'", "'\\''")}'`;
+let logoAnimation: ReturnType<typeof createTimeline> | undefined;
+
+const parseSvg = (markup: string) =>
+  document.createRange().createContextualFragment(markup).querySelector('svg')!;
+
+// Draw the outlines stroke by stroke, then let each block's color catch up.
+function playLogoAnimation(root: SVGSVGElement) {
+  const shapes = root.querySelectorAll('path');
+  if (reducedMotion.matches) return;
+  if (shapes.length > DRAW_LIMIT) {
+    logoAnimation = createTimeline().add(root, {
+      opacity: [0, 1],
+      duration: 400,
+      ease: 'outQuad',
+    });
+    return;
+  }
+  const step = Math.min(24, 900 / shapes.length);
+  utils.set(shapes, { fillOpacity: 0 });
+  logoAnimation = createTimeline()
+    .add(
+      svg.createDrawable(shapes),
+      {
+        draw: ['0 0', '0 1'],
+        duration: 620,
+        ease: 'inOutQuad',
+        delay: stagger(step),
+      },
+      0
+    )
+    .add(
+      shapes,
+      {
+        fillOpacity: [0, 1],
+        duration: 460,
+        ease: 'outQuad',
+        delay: stagger(step),
+      },
+      240
+    );
+}
 
 function updateCommand() {
   const args = ['npx isocube', '--text', quote(text.value)];
+  if (reverse.checked) args.push('--reverse');
   if (breaks.value.trim()) args.push('--break-at', quote(breaks.value.trim()));
   if (colors.value.trim()) args.push('--colors', quote(colors.value.trim()));
   args.push('--out', quote(filename.value));
@@ -27,8 +76,10 @@ function invalidate() {
   if (output) URL.revokeObjectURL(output.url);
   output = undefined;
   download.disabled = true;
-  image.hidden = true;
-  image.removeAttribute('src');
+  logoAnimation?.revert();
+  logoAnimation = undefined;
+  stage.hidden = true;
+  stage.replaceChildren();
   element('empty').hidden = false;
   status.textContent = 'Not generated';
   element('result-label').textContent = 'READY WHEN YOU ARE';
@@ -39,6 +90,7 @@ function invalidate() {
 }
 
 form.addEventListener('input', invalidate);
+reverse.addEventListener('change', () => form.requestSubmit());
 form.addEventListener('submit', (event) => {
   event.preventDefault();
   invalidate();
@@ -50,6 +102,7 @@ form.addEventListener('submit', (event) => {
     }
     const result = generateLogo({
       text: text.value,
+      reverse: reverse.checked,
       breakAt: breaks.value.trim()
         ? breaks.value.split(',').map(Number)
         : undefined,
@@ -61,9 +114,10 @@ form.addEventListener('submit', (event) => {
       type: 'image/svg+xml;charset=utf-8',
     });
     output = { url: URL.createObjectURL(blob), filename: filename.value };
-    image.src = output.url;
-    image.alt = `${result.lines.join(' / ')} block logo`;
-    image.hidden = false;
+    const drawing = parseSvg(result.svg);
+    stage.replaceChildren(drawing);
+    stage.hidden = false;
+    playLogoAnimation(drawing);
     element('empty').hidden = true;
     status.textContent = 'Generated';
     element('result-label').textContent = output.filename;
@@ -71,7 +125,7 @@ form.addEventListener('submit', (event) => {
       `${result.lines.length} ${result.lines.length === 1 ? 'row' : 'rows'} · ${(blob.size / 1024).toFixed(1)} KB · Transparent SVG`;
     // Include the resolved random palette so the command reproduces this exact SVG.
     element('command').textContent =
-      `npx isocube --text ${quote(text.value)}${breaks.value.trim() ? ` --break-at ${quote(breaks.value.trim())}` : ''} --colors ${quote(result.colors.join(','))} --out ${quote(filename.value)}`;
+      `npx isocube --text ${quote(text.value)}${reverse.checked ? ' --reverse' : ''}${breaks.value.trim() ? ` --break-at ${quote(breaks.value.trim())}` : ''} --colors ${quote(result.colors.join(','))} --out ${quote(filename.value)}`;
     download.disabled = false;
   } catch (cause) {
     error.textContent = cause instanceof Error ? cause.message : String(cause);
@@ -135,3 +189,20 @@ for (const button of themeButtons) {
   });
 }
 updateThemeButtons();
+
+// A short entrance so the hero settles into place instead of snapping in.
+if (!reducedMotion.matches) {
+  animate('.hero > *', {
+    opacity: [0, 1],
+    y: [14, 0],
+    duration: 620,
+    ease: 'outQuad',
+    delay: stagger(90),
+  });
+  animate('.brand-mark', {
+    opacity: [0, 1],
+    scale: [0.94, 1],
+    duration: 520,
+    ease: 'outBack',
+  });
+}
