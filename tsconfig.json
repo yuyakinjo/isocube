@@ -9,7 +9,7 @@
     "declaration": true,
     "outDir": "dist",
     "rootDir": "src",
-    "types": ["node"],
+    "types": ["node", "bun"],
     "skipLibCheck": true
   },
   "include": ["src/**/*.ts"]

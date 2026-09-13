@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "dev:site",
+      "type": "node-terminal",
+      "request": "launch",
+      // bun の子プロセスが同じインスペクタ用ソケットを奪い合い EADDRINUSE になるため env -u で除去する
+      "command": "env -u BUN_INSPECT -u BUN_INSPECT_NOTIFY -u BUN_INSPECT_CONNECT_TO -u NODE_OPTIONS -u VSCODE_INSPECTOR_OPTIONS bun run dev:site",
+      "autoAttachChildProcesses": false,
+      "serverReadyAction": {
+        "pattern": "Playground: (https?://\\S+)",
+        "action": "openIntegratedBrowser",
+        "killOnServerStop": true,
+      }
+    },
+    {
+      "name": "dev:site (integrated browser)",
+      "type": "editor-browser",
+      "request": "launch",
+      "url": "http://localhost:3333"
+    }
+  ]
+}

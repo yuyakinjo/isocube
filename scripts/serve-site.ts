@@ -3,7 +3,7 @@ import { resolve, sep } from "node:path";
 const root = resolve(import.meta.dirname, "../site-dist");
 const server = Bun.serve({
   hostname: "127.0.0.1",
-  port: Number(process.env.PORT ?? 3000),
+  port: Number(process.env.PORT ?? 3333),
   async fetch(request) {
     const pathname = decodeURIComponent(new URL(request.url).pathname);
     const path = resolve(root, `.${pathname === "/" ? "/index.html" : pathname}`);

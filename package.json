@@ -51,6 +51,7 @@
     "dev:site": "bun run build:site && bun scripts/serve-site.ts"
   },
   "devDependencies": {
+    "@types/bun": "^1.4.2",
     "@types/node": "^22.20.2",
     "oxfmt": "^0.67.0",
     "oxlint": "^1.82.0",
