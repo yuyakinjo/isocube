@@ -1,14 +1,24 @@
 {
-  "name": "block-string-logo",
+  "name": "isocube",
   "version": "2026.913.1405",
   "author": "yuyakinjo",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yuyakinjo/block-string-logo.git"
+    "url": "git+https://github.com/yuyakinjo/isocube.git"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",
     "typescript": "^7.0.2"
+  },
+    "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit && tsc -p web/tsconfig.json",
+    "test": "bun run build && bun test",
+    "ci": "bun run build && bun test && bun run typecheck && bun run build:site",
+    "prepack": "bun run build",
+    "version:next": "bun scripts/next-version.ts",
+    "build:site": "bun scripts/build-site.ts",
+    "dev:site": "bun run build:site && bun scripts/serve-site.ts"
   },
   "exports": {
     ".": {
@@ -17,10 +27,10 @@
     }
   },
   "bin": {
-    "block-string-logo": "dist/cli.js"
+    "isocube": "dist/cli.js"
   },
   "bugs": {
-    "url": "https://github.com/yuyakinjo/block-string-logo/issues"
+    "url": "https://github.com/yuyakinjo/isocube/issues"
   },
   "description": "Generate colorful geometric block-letter SVG logos from text.",
   "engines": {
@@ -30,7 +40,7 @@
     "dist",
     "examples"
   ],
-  "homepage": "https://github.com/yuyakinjo/block-string-logo#readme",
+  "homepage": "https://github.com/yuyakinjo/isocube#readme",
   "keywords": [
     "block-letters",
     "cli",
@@ -41,14 +51,6 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  },
-  "scripts": {
-    "build": "tsc",
-    "typecheck": "tsc --noEmit",
-    "test": "bun run build && bun test",
-    "ci": "bun run build && bun test && bun typecheck",
-    "prepack": "bun run build",
-    "version:next": "bun scripts/next-version.ts"
   },
   "type": "module"
 }

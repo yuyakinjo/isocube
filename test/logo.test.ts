@@ -9,13 +9,14 @@ import { fileURLToPath } from 'node:url';
 import { generateLogo } from '../dist/index.js';
 
 const cli = fileURLToPath(new URL('../dist/cli.js', import.meta.url));
-const run = (...args) =>
+const run = (...args: string[]) =>
   spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
 
 describe('generator', () => {
   // Sample filled polygons in SVG paint order, away from stroked boundaries.
-  const fillAt = (svg, x, y) => {
-    let offsetX = 0, offsetY = 0, fill;
+  const fillAt = (svg: string, x: number, y: number): string | undefined => {
+    let offsetX = 0, offsetY = 0;
+    let fill: string | undefined;
     const elements = /<g transform="translate\(([-\d.]+) ([-\d.]+)\)"[^>]*>|<\/g>|<path fill="(#[A-F\d]+)" d="([^"]+)"/g;
     for (const match of svg.matchAll(elements)) {
       if (match[1] !== undefined) {
@@ -24,14 +25,18 @@ describe('generator', () => {
       } else if (match[0] === '</g>') {
         offsetX = offsetY = 0;
       } else {
-        const coordinates = match[4].match(/-?\d+(?:\.\d+)?/g).map(Number);
-        const points = [];
+        const path = match[4];
+        assert.ok(path);
+        const values = path.match(/-?\d+(?:\.\d+)?/g);
+        assert.ok(values);
+        const coordinates = values.map(Number);
+        const points: [number, number][] = [];
         for (let i = 0; i < coordinates.length; i += 2) {
-          points.push([coordinates[i] + offsetX, coordinates[i + 1] + offsetY]);
+          points.push([coordinates[i]! + offsetX, coordinates[i + 1]! + offsetY]);
         }
         let inside = false;
         for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
-          const [ax, ay] = points[i], [bx, by] = points[j];
+          const [ax, ay] = points[i]!, [bx, by] = points[j]!;
           if ((ay > y) !== (by > y) && x < (bx - ax) * (y - ay) / (by - ay) + ax) inside = !inside;
         }
         if (inside) fill = match[3];
@@ -40,7 +45,7 @@ describe('generator', () => {
     return fill;
   };
   it('keeps lower-row caps visible beyond the row above and hides covered portions', () => {
-    const svg = (text) => generateLogo({ text, colors: ['#FF0000', '#00FF00', '#0000FF'] }).svg;
+    const svg = (text: string) => generateLogo({ text, colors: ['#FF0000', '#00FF00', '#0000FF'] }).svg;
     assert.equal(fillAt(svg('A\nAB'), 150, 180), '#0000FF');
     assert.equal(fillAt(svg('I\nA'), 110, 180), '#00FF00');
     assert.equal(fillAt(svg('A\nA'), 70, 180), '#FF0000');
@@ -123,10 +128,11 @@ describe('generator', () => {
     const { svg } = generateLogo({
       text: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
     });
-    assert.equal(svg.match(/data-letter=/g).length, 36);
+    assert.equal(svg.match(/data-letter=/g)?.length, 36);
     assert.ok(!svg.includes('undefined'));
-    const i = /data-letter="I">(.*?)<\/g>/.exec(svg)[1];
-    assert.equal(i.match(/<path/g).length, 1);
+    const i = /data-letter="I">(.*?)<\/g>/.exec(svg)?.[1];
+    assert.ok(i);
+    assert.equal(i.match(/<path/g)?.length, 1);
   });
 });
 
@@ -134,10 +140,10 @@ describe('CLI', () => {
   it('shows help without requiring text or creating files', () => {
     const result = run('--help');
     assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stdout, /block-string-logo --text/);
+    assert.match(result.stdout, /isocube --text/);
   });
   it('writes an SVG, overwrites by default, and accepts --force for compatibility', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'block-string-logo-test-'));
+    const dir = await mkdtemp(join(tmpdir(), 'isocube-test-'));
     try {
       const output = join(dir, 'nested', 'logo.svg');
       const args = [

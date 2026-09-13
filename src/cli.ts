@@ -20,7 +20,7 @@ try {
   });
   if (values.help) {
     console.log(
-      'block-string-logo --text DECOPIN [--break-at 4] [--colors "#2D00F7,#E500A4"] [--out output/logo.svg]\n改行位置: 累積文字数をカンマ区切り。色省略: 文字ごとにランダムRGB。対応: A-Z / 0-9。背景透過SVG。同名の出力ファイルは上書き保存します。'
+      'isocube --text DECOPIN [--break-at 4] [--colors "#2D00F7,#E500A4"] [--out output/logo.svg]\n改行位置: 累積文字数をカンマ区切り。色省略: 文字ごとにランダムRGB。対応: A-Z / 0-9。背景透過SVG。同名の出力ファイルは上書き保存します。'
     );
   } else {
     if (values.text === undefined)

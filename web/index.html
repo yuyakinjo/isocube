@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Turn text into colorful 3D block logos. Try it in your browser and download a transparent SVG." />
+    <title>Isocube — Playground</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <header><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">▦</span> isocube <span class="badge">PLAYGROUND</span></a><a class="github" href="https://github.com/yuyakinjo/isocube">GitHub <span aria-hidden="true">↗</span></a></header>
+    <main>
+      <section class="hero">
+        <p class="eyebrow"><span></span> TEXT IN. BLOCKS OUT.</p>
+        <h1>Turn your text<br /><span>into a logo.</span></h1>
+        <p class="intro">Mix letters and colors to create a block logo of your own.<br class="desktop" />No installation needed. Try it here. Take it anywhere as an SVG.</p>
+        <div class="features"><span>↗ Scalable SVG</span><span>▧ Transparent background</span><span>⌘ Made in your browser</span></div>
+      </section>
+      <section class="workspace" aria-label="Logo playground">
+        <div class="section-bar"><div><span class="step">01</span><h2>Create your logo</h2></div><span class="code-label">configure your logo</span></div>
+        <form id="logo-form" novalidate>
+          <div class="text-field"><label for="text">Logo text <code>--text</code></label><textarea id="text" name="text" rows="2" maxlength="256" required aria-describedby="text-help" spellcheck="false">HELLOWORLD</textarea><p id="text-help" class="help">A–Z / 0–9, up to 256 characters. Lowercase becomes uppercase. You can also enter line breaks directly.</p></div>
+          <div class="options-grid">
+            <div><label for="break-at">Line breaks <code>--break-at</code></label><input id="break-at" name="break-at" value="5" placeholder="e.g. 3,6" aria-describedby="break-help" /><p id="break-help" class="help">Comma-separated cumulative character positions. Cannot be combined with line breaks in the text.</p></div>
+            <div><label for="filename">File name <code>--out</code></label><input id="filename" name="filename" value="logo.svg" required pattern="[^\/\\]+\.[sS][vV][gG]" aria-describedby="filename-help" /><p id="filename-help" class="help">Include the .svg extension. Your browser settings determine where the file is saved.</p></div>
+          </div>
+          <div><label for="colors">Colors <code>--colors</code><span class="optional">Optional</span></label><input id="colors" name="colors" value="#2D00F7,#E500A4,#F20089,#FFB600,#6A00F4" placeholder="Leave blank for random colors" aria-describedby="colors-help" spellcheck="false" /><p id="colors-help" class="help">Comma-separated #RGB / #RRGGBB / rgb(r,g,b) colors. Short palettes repeat from the beginning.</p><div class="presets"><span>Palette</span><button type="button" data-palette="#2D00F7,#E500A4,#F20089,#FFB600,#6A00F4"><i style="--swatch:#a855f7"></i>Pop</button><button type="button" data-palette="#0284C7,#06B6D4,#5EEAD4"><i style="--swatch:#06b6d4"></i>Ocean</button><button type="button" data-palette="#F97316,#FB7185,#FBBF24"><i style="--swatch:#fb7185"></i>Sunset</button><button type="button" data-palette="">↻ Random</button></div></div>
+          <div class="form-actions"><p>Small letters. Big ideas.</p><button class="primary" type="submit">Generate SVG <span aria-hidden="true">→</span></button></div>
+          <p id="error" role="alert" hidden></p>
+        </form>
+        <div class="section-bar preview-bar"><div><span class="step">02</span><h2>Preview</h2><span id="status" role="status">Not generated</span></div><div class="background-options" aria-label="Preview background"><button type="button" data-background="grid" aria-label="Transparent background" aria-pressed="true">▧</button><button type="button" data-background="light" aria-label="White background" aria-pressed="false">☀</button><button type="button" data-background="dark" aria-label="Dark background" aria-pressed="false">☾</button></div></div>
+        <div id="preview" class="preview" data-background="grid"><div id="empty"><span aria-hidden="true">▦</span><p>Your logo belongs here.</p><small>Enter your text and options, then click “Generate SVG”.</small></div><img id="logo-image" alt="Generated block logo" hidden /></div>
+        <div class="download-bar"><div><p id="result-label">READY WHEN YOU ARE</p><span id="result-detail">Your SVG will have a transparent background.</span></div><button id="download" class="download" type="button" disabled>↓ Download SVG</button></div>
+      </section>
+      <section class="terminal"><div><span class="terminal-dot"></span><span>The same logo, from your terminal.</span></div><pre><code id="command">npx isocube --text HELLOWORLD --break-at 5</code></pre></section>
+    </main>
+    <footer><span>isocube</span><span>Made of letters. Built with blocks.</span><a href="https://github.com/yuyakinjo/isocube#readme">CLI documentation ↗</a></footer>
+  </body>
+</html>

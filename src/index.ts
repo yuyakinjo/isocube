@@ -1,5 +1,3 @@
-import { randomBytes } from 'node:crypto';
-
 interface Glyph {
   width?: number;
   marks?: string;
@@ -85,11 +83,11 @@ function colorValue(color: string): string {
       .map((channel) => Number(channel).toString(16).padStart(2, '0'))
       .join('')}`.toUpperCase();
   }
-  throw new Error(`不正な色: ${color} (#RRGGBB または rgb(0,0,0) を指定)`);
+  throw new Error(`Invalid color: ${color}. Use #RGB, #RRGGBB, or rgb(0,0,0).`);
 }
 
 function randomColor(): string {
-  return `#${[...randomBytes(3)].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`.toUpperCase();
+  return `#${[...crypto.getRandomValues(new Uint8Array(3))].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`.toUpperCase();
 }
 
 export function generateLogo(options: LogoOptions): {
@@ -99,12 +97,12 @@ export function generateLogo(options: LogoOptions): {
 } {
   // Unicode の大文字展開 (ß → SS など) を暗黙に受け入れない。
   if (!/^[a-z0-9\n]+$/i.test(options.text) || options.text.length > 256) {
-    throw new Error('文字は半角英数字と改行で1〜256文字を指定してください。');
+    throw new Error('Enter 1–256 ASCII letters, digits, or line breaks.');
   }
   const text = options.text.toUpperCase();
   const breaks = options.breakAt ?? [];
   if (text.includes('\n') && breaks.length > 0) {
-    throw new Error('文字内の改行と --break-at は同時に指定できません。');
+    throw new Error('Line breaks in the text cannot be combined with --break-at.');
   }
   let previous = 0;
   for (const position of breaks) {
@@ -114,7 +112,7 @@ export function generateLogo(options: LogoOptions): {
       position >= text.length
     ) {
       throw new Error(
-        '改行位置は文字数未満の正の整数を昇順で指定してください。'
+        'Line break positions must be positive integers in ascending order, each less than the text length.'
       );
     }
     previous = position;
@@ -126,9 +124,9 @@ export function generateLogo(options: LogoOptions): {
           text.slice(breaks[index - 1] ?? 0, end)
         );
   if (lines.some((line) => line.length === 0))
-    throw new Error('空の行は指定できません。');
+    throw new Error('Empty lines are not allowed.');
   const palette = options.colors?.map(colorValue);
-  if (palette?.length === 0) throw new Error('色は1色以上指定してください。');
+  if (palette?.length === 0) throw new Error('Specify at least one color.');
   const count = lines.join('').length;
   const colors = Array.from({ length: count }, (_, index) =>
     palette === undefined ? randomColor() : palette[index % palette.length]!
