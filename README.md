@@ -35,6 +35,16 @@ npx isocube --text ABCDEFGHI --break-at 3,6 \
 
 ![ABCDEFGHI in three rows](examples/repeat-color.svg)
 
+All 26 letters: four rows of A–Z.
+
+```sh
+npx isocube --text ABCDEFGHIJKLMNOPQRSTUVWXYZ --break-at 7,14,21 \
+  --colors '#2D00F7,#E500A4,#F20089,#FFB600,#6A00F4,#8900F2,#BC00DD' \
+  --out output/alphabet.svg
+```
+
+![A to Z in four rows](examples/alphabet.svg)
+
 | Option       | Description                                                                                                                                                            |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--text`     | Required. 1–256 ASCII letters, digits, or actual newlines. Lowercase becomes uppercase. No spaces or other characters.                                                 |

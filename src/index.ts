@@ -37,16 +37,12 @@ const GLYPHS: Record<string, Glyph> = {
   I: { width: 70 },
   J: {
     outline: [
-      [55, 0],
+      [50, 0],
       [100, 0],
-      [100, 115],
-      [75, 140],
-      [25, 140],
-      [0, 115],
-      [0, 85],
-      [40, 85],
-      [40, 100],
-      [55, 100],
+      [100, 140],
+      [0, 140],
+      [0, 95],
+      [50, 95],
     ],
   },
   K: {
@@ -73,14 +69,11 @@ const GLYPHS: Record<string, Glyph> = {
     width: 120,
     outline: [
       [15, 0],
-      [45, 0],
-      [60, 85],
-      [75, 0],
       [105, 0],
       [120, 140],
       [0, 140],
     ],
-    marks: 'M30 140V97.5 M90 140V97.5',
+    marks: 'M30 140V97.5 M60 0V40 M90 140V97.5',
   },
   N: { marks: 'M48 0L56 42 M40 98L48 140' },
   O: { marks: 'M50 42V98' },
@@ -95,7 +88,7 @@ const GLYPHS: Record<string, Glyph> = {
     ],
     marks: 'M42 42H62',
   },
-  Q: { marks: 'M50 35V80 M65 105L100 140' },
+  Q: { marks: 'M50 35V80 M58.5 122.5L76 140 M82.5 122.5L100 140' },
   R: { marks: 'M42 42H62 M50 95L75 140 M80 75H100' },
   S: { marks: 'M40 45H100 M0 95H60' },
   T: {
@@ -126,12 +119,9 @@ const GLYPHS: Record<string, Glyph> = {
       [0, 0],
       [120, 0],
       [105, 140],
-      [75, 140],
-      [60, 100],
-      [45, 140],
       [15, 140],
     ],
-    marks: 'M30 0V42.5 M90 0V42.5',
+    marks: 'M30 0V42.5 M60 140V100 M90 0V42.5',
   },
   X: {
     outline: [
@@ -142,6 +132,7 @@ const GLYPHS: Record<string, Glyph> = {
       [0, 140],
       [30, 70],
     ],
+    marks: 'M50 0V25 M50 140V115',
   },
   Y: {
     outline: [
@@ -156,7 +147,8 @@ const GLYPHS: Record<string, Glyph> = {
     ],
     marks: 'M50 0V45',
   },
-  Z: { marks: 'M0 45H60L40 95H100' },
+  // N の線を時計回りに90度回転し、100×140 の文字枠に合わせる。
+  Z: { marks: 'M100 67.2L70 78.4 M30 56L0 67.2' },
   '0': { marks: 'M50 35V105 M35 85L65 55' },
   '1': {
     width: 70,
