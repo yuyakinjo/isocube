@@ -1,6 +1,8 @@
 # isocube
 
-Generate colorful block-letter logos as transparent SVGs. No API key, external fonts, or runtime dependencies required. Supports Node.js 22 or later.
+[![npm version](https://img.shields.io/npm/v/isocube.svg)](https://www.npmjs.com/package/isocube)
+
+Generate colorful block-letter logos as transparent SVGs. No API key, external fonts, or runtime dependencies required.
 
 ![Isocube logo](examples/isocube.svg)
 
