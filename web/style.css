@@ -150,9 +150,9 @@ header {
   letter-spacing: -0.5px;
 }
 .brand-mark {
-  color: var(--accent);
-  font-size: 31px;
-  line-height: 1;
+  height: 31px;
+  width: auto;
+  display: block;
 }
 .badge {
   font:
@@ -346,6 +346,40 @@ a:focus-visible {
   color: var(--subtle);
   margin: 8px 0 0;
 }
+.advanced {
+  margin: 23px 0;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.advanced > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  list-style: none;
+}
+.advanced > summary::-webkit-details-marker {
+  display: none;
+}
+.advanced > summary::before {
+  content: "▸";
+  color: var(--accent);
+}
+.advanced[open] > summary::before {
+  content: "▾";
+}
+.advanced > summary + * {
+  margin-top: 0;
+}
+.advanced > :not(summary) {
+  padding: 0 14px;
+}
+.advanced > :last-child {
+  padding-bottom: 18px;
+}
 .options-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -388,15 +422,14 @@ a:focus-visible {
 }
 .form-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-top: 25px;
-  padding-top: 22px;
-  border-top: 1px solid var(--border);
 }
 .form-actions p {
   color: var(--subtle);
   font-size: 11px;
+  margin-right: auto;
 }
 .primary {
   border: 0;
@@ -615,9 +648,6 @@ footer > span:first-child {
   }
   .form-actions p {
     display: none;
-  }
-  .form-actions {
-    justify-content: flex-end;
   }
   .preview {
     padding: 20px;

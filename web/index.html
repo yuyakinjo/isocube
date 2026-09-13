@@ -29,7 +29,7 @@
   <body>
     <header>
       <a class="brand" href="./"
-        ><span class="brand-mark" aria-hidden="true">▦</span> isocube
+        ><img class="brand-mark" src="./isocube.svg" alt="isocube" width="112" height="31" />
         <span class="badge">PLAYGROUND</span></a
       >
       <div class="header-actions">
@@ -88,64 +88,69 @@ HELLOWORLD</textarea>
               breaks directly.
             </p>
           </div>
-          <div class="options-grid">
-            <div>
-              <label for="break-at">Line breaks <code>--break-at</code></label
-              ><input
-                id="break-at"
-                name="break-at"
-                value="5"
-                placeholder="e.g. 3,6"
-                aria-describedby="break-help"
-              />
-              <p id="break-help" class="help">
-                Comma-separated cumulative character positions. Cannot be combined with line breaks
-                in the text.
-              </p>
+          <details class="advanced">
+            <summary>
+              Options <span class="optional">Line breaks / File name / Colors</span>
+            </summary>
+            <div class="options-grid">
+              <div>
+                <label for="break-at">Line breaks <code>--break-at</code></label
+                ><input
+                  id="break-at"
+                  name="break-at"
+                  value="5"
+                  placeholder="e.g. 3,6"
+                  aria-describedby="break-help"
+                />
+                <p id="break-help" class="help">
+                  Comma-separated cumulative character positions. Cannot be combined with line
+                  breaks in the text.
+                </p>
+              </div>
+              <div>
+                <label for="filename">File name <code>--out</code></label
+                ><input
+                  id="filename"
+                  name="filename"
+                  value="logo.svg"
+                  required
+                  pattern="[^\/\\]+\.[sS][vV][gG]"
+                  aria-describedby="filename-help"
+                />
+                <p id="filename-help" class="help">
+                  Include the .svg extension. Your browser settings determine where the file is
+                  saved.
+                </p>
+              </div>
             </div>
             <div>
-              <label for="filename">File name <code>--out</code></label
+              <label for="colors"
+                >Colors <code>--colors</code><span class="optional">Optional</span></label
               ><input
-                id="filename"
-                name="filename"
-                value="logo.svg"
-                required
-                pattern="[^\/\\]+\.[sS][vV][gG]"
-                aria-describedby="filename-help"
+                id="colors"
+                name="colors"
+                value="#2D00F7,#E500A4,#F20089,#FFB600,#6A00F4"
+                placeholder="Leave blank for random colors"
+                aria-describedby="colors-help"
+                spellcheck="false"
               />
-              <p id="filename-help" class="help">
-                Include the .svg extension. Your browser settings determine where the file is saved.
+              <p id="colors-help" class="help">
+                Comma-separated #RGB / #RRGGBB / rgb(r,g,b) colors. Short palettes repeat from the
+                beginning.
               </p>
+              <div class="presets">
+                <span>Palette</span
+                ><button type="button" data-palette="#2D00F7,#E500A4,#F20089,#FFB600,#6A00F4">
+                  <i style="--swatch: #a855f7"></i>Pop</button
+                ><button type="button" data-palette="#0284C7,#06B6D4,#5EEAD4">
+                  <i style="--swatch: #06b6d4"></i>Ocean</button
+                ><button type="button" data-palette="#F97316,#FB7185,#FBBF24">
+                  <i style="--swatch: #fb7185"></i>Sunset</button
+                ><button type="button" data-palette="">↻ Random</button>
+              </div>
             </div>
-          </div>
-          <div>
-            <label for="colors"
-              >Colors <code>--colors</code><span class="optional">Optional</span></label
-            ><input
-              id="colors"
-              name="colors"
-              value="#2D00F7,#E500A4,#F20089,#FFB600,#6A00F4"
-              placeholder="Leave blank for random colors"
-              aria-describedby="colors-help"
-              spellcheck="false"
-            />
-            <p id="colors-help" class="help">
-              Comma-separated #RGB / #RRGGBB / rgb(r,g,b) colors. Short palettes repeat from the
-              beginning.
-            </p>
-            <div class="presets">
-              <span>Palette</span
-              ><button type="button" data-palette="#2D00F7,#E500A4,#F20089,#FFB600,#6A00F4">
-                <i style="--swatch: #a855f7"></i>Pop</button
-              ><button type="button" data-palette="#0284C7,#06B6D4,#5EEAD4">
-                <i style="--swatch: #06b6d4"></i>Ocean</button
-              ><button type="button" data-palette="#F97316,#FB7185,#FBBF24">
-                <i style="--swatch: #fb7185"></i>Sunset</button
-              ><button type="button" data-palette="">↻ Random</button>
-            </div>
-          </div>
+          </details>
           <div class="form-actions">
-            <p>Small letters. Big ideas.</p>
             <button class="primary" type="submit">
               Generate SVG <span aria-hidden="true">→</span>
             </button>

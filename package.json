@@ -48,11 +48,11 @@
     "prepack": "bun run build",
     "version:next": "bun scripts/next-version.ts",
     "build:site": "bun scripts/build-site.ts",
-    "dev:site": "bun run build:site && bun scripts/serve-site.ts"
+    "dev:site": "bun scripts/serve-site.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.4.2",
-    "@types/node": "^22.20.2",
+    "@types/node": "^26.5.1",
     "oxfmt": "^0.67.0",
     "oxlint": "^1.82.0",
     "typescript": "^7.0.2"

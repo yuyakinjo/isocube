@@ -11,7 +11,7 @@
       "serverReadyAction": {
         "pattern": "Playground: (https?://\\S+)",
         "action": "openIntegratedBrowser",
-        "killOnServerStop": true,
+        "killOnServerStop": true
       }
     },
     {
