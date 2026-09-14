@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Explore all 26 letters of the Isocube block alphabet and download the complete A–Z as a transparent SVG."
+    />
+    <title>Isocube — Alphabet</title>
+    <script>
+      try {
+        const saved = localStorage.getItem('isocube-theme');
+        document.documentElement.dataset.theme =
+          saved === 'light' || saved === 'dark'
+            ? saved
+            : matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+      } catch {
+        document.documentElement.dataset.theme = matchMedia(
+          '(prefers-color-scheme: dark)'
+        ).matches
+          ? 'dark'
+          : 'light';
+      }
+    </script>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./theme.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./"
+        ><img
+          class="brand-mark"
+          src="./isocube.svg"
+          alt="isocube"
+          width="112"
+          height="31"
+        />
+        <span class="badge">ALPHABET</span></a
+      >
+      <div class="header-actions">
+        <a class="site-link" href="./">Playground</a>
+        <div class="theme-options" role="group" aria-label="Site theme">
+          <button type="button" data-theme="light" aria-pressed="false">
+            ☀ Light</button
+          ><button type="button" data-theme="dark" aria-pressed="false">
+            ☾ Dark
+          </button>
+        </div>
+        <a
+          class="github"
+          href="https://github.com/yuyakinjo/isocube"
+          aria-label="GitHub repository"
+          ><svg
+            viewBox="0 0 16 16"
+            width="20"
+            height="20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M8 0c-4.42 0-8 3.58-8 8a8.013 8.013 0 0 0 5.47 7.59c.4.08.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+            ></path></svg
+        ></a>
+      </div>
+    </header>
+    <main>
+      <section class="hero">
+        <p class="eyebrow"><span></span> THE BLOCK ALPHABET</p>
+        <h1>Every letter.<br /><span>All in blocks.</span></h1>
+        <p class="intro">
+          Explore all 26 letters from A to Z, rendered in Isocube’s colorful
+          block style.
+        </p>
+      </section>
+      <section class="workspace" aria-labelledby="alphabet-heading">
+        <div class="section-bar">
+          <div><h2 id="alphabet-heading">A–Z</h2></div>
+          <span class="code-label">26 letters · 4 rows</span>
+        </div>
+        <div class="preview alphabet-preview" data-background="grid">
+          <img
+            src="./alphabet.svg"
+            alt="All 26 Isocube block letters, in alphabetical order: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"
+          />
+        </div>
+        <div class="download-bar">
+          <div>
+            <p>THE COMPLETE ALPHABET</p>
+            <span>26 letters · Transparent SVG</span>
+          </div>
+          <a class="download" href="./alphabet.svg" download="alphabet.svg"
+            >↓ Download SVG</a
+          >
+        </div>
+      </section>
+      <p class="alphabet-back">
+        <a class="site-link" href="./"
+          >← Create your own logo in the playground</a
+        >
+      </p>
+    </main>
+    <footer>
+      <span>isocube</span><span>Made of letters. Built with blocks.</span
+      ><a href="https://github.com/yuyakinjo/isocube#readme"
+        >CLI documentation ↗</a
+      >
+    </footer>
+  </body>
+</html>
