@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Explore all 26 letters of the Isocube block alphabet and download the complete A–Z as a transparent SVG."
+      content="Explore Isocube’s katakana block letters, including voiced and small kana, and download transparent SVG charts."
     />
-    <title>Isocube — Alphabet</title>
+    <title>Isocube — Katakana</title>
     <script>
       try {
         const saved = localStorage.getItem('isocube-theme');
@@ -38,7 +38,7 @@
           width="112"
           height="31"
         />
-        <span class="badge">ALPHABET</span></a
+        <span class="badge">KATAKANA</span></a
       >
       <div class="header-actions">
         <div class="theme-options" role="group" aria-label="Site theme">
@@ -67,36 +67,92 @@
     </header>
     <nav class="site-nav" aria-label="Main navigation">
       <a href="./">Playground</a>
-      <a href="./alphabet.html" aria-current="page">A–Z</a>
+      <a href="./alphabet.html">A–Z</a>
       <a href="./hiragana.html" lang="ja">ひらがな</a>
-      <a href="./katakana.html" lang="ja">カタカナ</a>
+      <a href="./katakana.html" aria-current="page" lang="ja">カタカナ</a>
     </nav>
     <main>
       <section class="hero">
-        <p class="eyebrow"><span></span> THE BLOCK ALPHABET</p>
-        <h1>Every letter.<br /><span>All in blocks.</span></h1>
+        <p class="eyebrow"><span></span> THE KANA COLLECTION</p>
+        <h1>Katakana<br /><span lang="ja">カタカナ</span></h1>
         <p class="intro">
-          Explore all 26 letters from A to Z, rendered in Isocube’s colorful
-          block style.
+          All 46 basic katakana characters, plus voiced and small kana.<br />Every
+          character is drawn in blocks and ready to download as an SVG.
         </p>
       </section>
-      <section class="workspace" aria-labelledby="alphabet-heading">
+      <section class="workspace kana-chart" aria-labelledby="katakana-heading">
         <div class="section-bar">
-          <div><h2 id="alphabet-heading">A–Z</h2></div>
-          <span class="code-label">26 letters · 4 rows</span>
+          <div><h2 id="katakana-heading">Basic kana</h2></div>
+          <span class="code-label">46 characters</span>
         </div>
         <div class="preview alphabet-preview" data-background="grid">
           <img
-            src="./alphabet.svg"
-            alt="All 26 Isocube block letters, in alphabetical order: A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"
+            src="./katakana.svg"
+            alt="46 katakana characters in gojūon order"
           />
         </div>
         <div class="download-bar">
           <div>
-            <p>THE COMPLETE ALPHABET</p>
-            <span>26 letters · Transparent SVG</span>
+            <p>BASIC KANA</p>
+            <span>46 characters · Transparent SVG</span>
           </div>
-          <a class="download" href="./alphabet.svg" download="alphabet.svg"
+          <a class="download" href="./katakana.svg" download="katakana.svg"
+            >↓ Download SVG</a
+          >
+        </div>
+      </section>
+      <section
+        class="workspace kana-chart"
+        aria-labelledby="katakana-voiced-heading"
+      >
+        <div class="section-bar">
+          <div><h2 id="katakana-voiced-heading">Voiced kana</h2></div>
+          <span class="code-label">28 characters</span>
+        </div>
+        <div class="preview alphabet-preview" data-background="grid">
+          <img
+            src="./katakana-voiced.svg"
+            alt="28 katakana characters with dakuten and handakuten"
+          />
+        </div>
+        <div class="download-bar">
+          <div>
+            <p>VOICED KANA</p>
+            <span>28 characters · Transparent SVG</span>
+          </div>
+          <a
+            class="download"
+            href="./katakana-voiced.svg"
+            download="katakana-voiced.svg"
+            >↓ Download SVG</a
+          >
+        </div>
+      </section>
+      <section
+        class="workspace kana-chart"
+        aria-labelledby="katakana-small-heading"
+      >
+        <div class="section-bar">
+          <div>
+            <h2 id="katakana-small-heading">Small kana & long vowel mark</h2>
+          </div>
+          <span class="code-label">13 characters</span>
+        </div>
+        <div class="preview alphabet-preview" data-background="grid">
+          <img
+            src="./katakana-small.svg"
+            alt="13 katakana characters including small vowels, small tsu, ya, yu, yo, wa, ka, ke, and the long vowel mark"
+          />
+        </div>
+        <div class="download-bar">
+          <div>
+            <p>SMALL KANA & LONG VOWEL MARK</p>
+            <span>13 characters · Transparent SVG</span>
+          </div>
+          <a
+            class="download"
+            href="./katakana-small.svg"
+            download="katakana-small.svg"
             >↓ Download SVG</a
           >
         </div>

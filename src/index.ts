@@ -1,11 +1,16 @@
+import { KANA_GLYPHS } from './kana.js';
+
 interface Glyph {
   width?: number;
   marks?: string;
   outline?: readonly (readonly [number, number])[];
+  /** Clockwise outer contours and counterclockwise holes in SVG coordinates. */
+  contours?: readonly (readonly (readonly [number, number])[])[];
 }
 
 // 100×140 の正面。黒い切れ込みと輪郭で文字を描く。
 const GLYPHS: Record<string, Glyph> = {
+  ...KANA_GLYPHS,
   A: { marks: 'M50 35V65 M50 100V140' },
   B: { marks: 'M50 30V50 M50 90V110 M80 70H100' },
   C: { marks: 'M55 70H100' },
@@ -219,11 +224,22 @@ export function generateLogo(options: LogoOptions): {
   lines: string[];
   colors: string[];
 } {
-  // Unicode の大文字展開 (ß → SS など) を暗黙に受け入れない。
-  if (!/^[a-z0-9\n]+$/i.test(options.text) || options.text.length > 256) {
-    throw new Error('Enter 1–256 ASCII letters, digits, or line breaks.');
+  // Normalize decomposed dakuten while rejecting unsupported Unicode and
+  // uppercase expansions such as ß → SS before case conversion.
+  const normalized = options.text.normalize('NFC');
+  if (
+    !/^[a-z0-9\nぁ-ゖァ-ヺー\u3099\u309a]+$/i.test(options.text) ||
+    normalized.length > 256 ||
+    [...normalized].some(
+      (letter) =>
+        letter !== '\n' && !Object.hasOwn(GLYPHS, letter.toUpperCase())
+    )
+  ) {
+    throw new Error(
+      'Enter 1–256 letters (A–Z, hiragana, katakana), digits, or line breaks.'
+    );
   }
-  const uppercase = options.text.toUpperCase();
+  const uppercase = normalized.toUpperCase();
   const text = options.reverse ? [...uppercase].reverse().join('') : uppercase;
   const breaks = options.breakAt ?? [];
   if (text.includes('\n') && breaks.length > 0) {
@@ -298,26 +314,36 @@ export function generateLogo(options: LogoOptions): {
               [w, height],
               [0, height],
             ] as const));
-      const glyphSides: string[] = [];
-      for (const [index, start] of outline.entries()) {
-        const end = outline[(index + 1) % outline.length]!;
-        const dx = end[0] - start[0];
-        const dy = end[1] - start[1];
-        if (dx + dy <= 0) continue;
-        const ax = x + start[0],
-          ay = y + start[1];
-        const bx = x + end[0],
-          by = y + end[1];
-        glyphSides.push(
-          `<path fill="${color}" d="M${ax} ${ay}L${ax + depth} ${ay - depth}L${bx + depth} ${by - depth}L${bx} ${by}Z"/>`
-        );
+      const contours = spec.contours ?? [outline];
+      const glyphSides: { path: string; order: number }[] = [];
+      for (const contour of contours) {
+        for (const [index, start] of contour.entries()) {
+          const end = contour[(index + 1) % contour.length]!;
+          const dx = end[0] - start[0];
+          const dy = end[1] - start[1];
+          if (dx + dy <= 0) continue;
+          const ax = x + start[0],
+            ay = y + start[1];
+          const bx = x + end[0],
+            by = y + end[1];
+          glyphSides.push({
+            path: `<path fill="${color}" d="M${ax} ${ay}L${ax + depth} ${ay - depth}L${bx + depth} ${by - depth}L${bx} ${by}Z"/>`,
+            order: (start[0] + end[0] - start[1] - end[1]) / 2,
+          });
+        }
       }
       // 下の行から、行内では左から描き、手前の面で隠れる部分を覆う。
       // 行幅や列位置で省略しないことで、隣の切り欠きから見える面も残す。
-      rowSides.push(...glyphSides);
-      const face = `M${outline.map(([px, py]) => `${px} ${py}`).join('L')}Z`;
+      // A side closer to the upper right starts nearer the front at overlaps.
+      if (spec.contours) glyphSides.sort((a, b) => a.order - b.order);
+      rowSides.push(...glyphSides.map((side) => side.path));
+      const face = contours
+        .map(
+          (contour) => `M${contour.map(([px, py]) => `${px} ${py}`).join('L')}Z`
+        )
+        .join('');
       faces.push(
-        `<g transform="translate(${x} ${y})" data-letter="${letter}"><path fill="${color}" d="${face}"/>${spec.marks === undefined ? '' : `<path fill="none" stroke-width="6" d="${spec.marks}"/>`}</g>`
+        `<g transform="translate(${x} ${y})" data-letter="${letter}"><path fill="${color}"${spec.contours ? ' fill-rule="evenodd"' : ''} d="${face}"/>${spec.marks === undefined ? '' : `<path fill="none" stroke-width="6" d="${spec.marks}"/>`}</g>`
       );
       x += w;
     }

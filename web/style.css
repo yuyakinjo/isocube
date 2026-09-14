@@ -697,3 +697,51 @@ footer > span:first-child {
 .alphabet-back {
   margin: 25px 0 55px;
 }
+
+.site-nav {
+  max-width: 1120px;
+  margin: auto;
+  padding: 16px 40px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.site-nav a {
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: -1px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.site-nav a:hover {
+  color: var(--accent);
+  background: var(--panel);
+}
+.site-nav a[aria-current='page'] {
+  color: var(--accent);
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: 0 1px 0 0 var(--surface);
+}
+.kana-chart {
+  margin-bottom: 24px;
+}
+.kana-chart .alphabet-preview img {
+  max-width: 664px;
+}
+@media (max-width: 640px) {
+  .site-nav {
+    padding: 16px 18px 0;
+    gap: 2px;
+  }
+  .site-nav a {
+    padding: 8px 12px;
+  }
+}

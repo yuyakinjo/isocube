@@ -21,7 +21,7 @@ try {
   });
   if (values.help) {
     console.log(
-      'isocube --text DECOPIN [--reverse] [--break-at 4] [--colors "#2D00F7,#E500A4"] [--out output/logo.svg]\n逆順: --reverse で改行を含む入力全体を逆転してから改行位置を適用。改行位置: 累積文字数をカンマ区切り。色省略: 文字ごとにランダムRGB。対応: A-Z / 0-9。背景透過SVG。同名の出力ファイルは上書き保存します。'
+      'isocube --text DECOPIN [--reverse] [--break-at 4] [--colors "#2D00F7,#E500A4"] [--out output/logo.svg]\n逆順: --reverse で改行を含む入力全体を逆転してから改行位置を適用。改行位置: 累積文字数をカンマ区切り。色省略: 文字ごとにランダムRGB。対応: A-Z / 0-9 / ひらがな / カタカナ（濁音・半濁音・小書き文字・長音を含む）。背景透過SVG。同名の出力ファイルは上書き保存します。'
     );
   } else {
     if (values.text === undefined)

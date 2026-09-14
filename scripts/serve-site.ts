@@ -44,29 +44,36 @@ const server = Bun.serve({
     const file = Bun.file(path);
     if (!(await file.exists()))
       return new Response('Not found', { status: 404 });
-    if (!path.endsWith('.html')) return new Response(file);
+    if (!path.endsWith('.html'))
+      return new Response(file, { headers: { 'cache-control': 'no-store' } });
     const html = (await file.text()).replace(
       '</body>',
       `${reloadScript}</body>`
     );
     return new Response(html, {
-      headers: { 'content-type': 'text/html; charset=utf-8' },
+      headers: {
+        'content-type': 'text/html; charset=utf-8',
+        'cache-control': 'no-store',
+      },
     });
   },
 });
 
 let pending: ReturnType<typeof setTimeout> | undefined;
+let queue = Promise.resolve();
 watch(sources, { recursive: true }, () => {
   clearTimeout(pending);
-  pending = setTimeout(async () => {
-    try {
-      await buildSite();
-      const message = new TextEncoder().encode('data: reload\n\n');
-      for (const listener of listeners) listener.enqueue(message);
-      console.log('Rebuilt site-dist/ after a change in web/');
-    } catch (cause) {
-      console.error(cause);
-    }
+  pending = setTimeout(() => {
+    queue = queue.then(async () => {
+      try {
+        await buildSite();
+        const message = new TextEncoder().encode('data: reload\n\n');
+        for (const listener of listeners) listener.enqueue(message);
+        console.log('Rebuilt site-dist/ after a change in web/');
+      } catch (cause) {
+        console.error(cause);
+      }
+    });
   }, 50);
 });
 

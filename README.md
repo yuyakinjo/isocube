@@ -53,13 +53,26 @@ npx isocube --text ABCDEFGHIJKLMNOPQRSTUVWXYZ --break-at 7,14,21 \
 
 | Option       | Description                                                                                                                                                            |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--text`     | Required. 1–256 ASCII letters, digits, or actual newlines. Lowercase becomes uppercase. No spaces or other characters.                                                 |
+| `--text`     | Required. 1–256 letters (A–Z, hiragana, katakana), digits, or actual newlines. Lowercase becomes uppercase. No spaces or other characters.                             |
 | `--reverse`  | Reverse the entire input, including newlines, before applying `--break-at`. Colors follow the resulting character order. Defaults to off.                              |
 | `--break-at` | Optional ascending cumulative character positions, e.g. `4` or `3,6`. Cannot be combined with embedded newlines.                                                       |
 | `--colors`   | Optional comma-separated `#RGB`, `#RRGGBB`, or `rgb(r,g,b)` colors. A short palette repeats across rows. Defaults to independent random RGB values for each character. |
 | `--out`      | SVG output path. Default: `output/logo.svg`. Existing files are overwritten.                                                                                           |
 | `--force`    | Accepted for compatibility. Existing files are overwritten by default.                                                                                                 |
 | `--help`     | Show usage.                                                                                                                                                            |
+
+## Hiragana and katakana
+
+Generate kana with the same CLI and JavaScript API. Both scripts support the 46 basic kana, voiced and semi-voiced forms (including ゔ / ヴ), small kana, and the long vowel mark ー. Katakana also supports ヷ / ヺ. Kanji, half-width kana, historical ゐ / ゑ / ヰ / ヱ, spaces, and punctuation are not supported.
+
+```sh
+npx isocube --text 'こんにちは' --out output/hiragana.svg
+npx isocube --text 'アイスクリーム' --out output/katakana.svg
+```
+
+Kana are solid polygon silhouettes with extruded sides and open counters, using embedded vector paths with no font dependency. Decomposed dakuten and handakuten are normalized to composed kana before counting characters, reversing, or applying line breaks. Dakuten and handakuten are separate solid shapes. Small kana use smaller solid glyphs aligned to the baseline.
+
+The site includes **A–Z**, **ひらがな**, and **カタカナ** galleries with SVG downloads. Run `bun run dev:site` to view them locally.
 
 ## JavaScript API
 
