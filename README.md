@@ -87,7 +87,7 @@ bun run dev:editor
 
 Open <http://127.0.0.1:3334/editor.html> (also printed in the terminal). Set `PORT` to use a different port, for example `PORT=4000 bun run dev:editor`. The playground remains available through `bun run dev:site` on port 3333, with a **Glyph Editor** link.
 
-Select A–Z, 0–9, or Space and edit its width, outline vertices, and cut-line coordinates. Each value has one number input and one synchronized slider, with 0.1-unit steps. The editor shows the saved and edited letter side by side, plus a sample word. Colors stay fixed while editing so shape changes are easy to compare.
+Select A–Z, 0–9, or Space and edit its width, outline vertices, and cut-line coordinates. Each value has one number input and one synchronized slider, with 0.1-unit steps, plus a reset button that restores that value to its saved setting. The editor shows the saved and edited letter side by side, plus a sample word. On desktop, the controls match the preview panel's height and scroll independently so the preview stays visible while editing lower fields. Colors stay fixed while editing so shape changes are easy to compare.
 
 Click **リポジトリに保存** to write `src/glyphs.json` from the local editor. On the published site, download `glyphs.json` and replace `src/glyphs.json` in your checkout. You can also import a downloaded configuration to continue editing. The editor lists changed characters and supports resetting one letter or all edits. Saving refuses to overwrite a file changed elsewhere since the page was loaded.
 

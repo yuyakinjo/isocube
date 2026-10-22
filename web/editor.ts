@@ -100,7 +100,8 @@ function numberField(
   value: number,
   max: number | (() => number),
   update: (value: number) => void,
-  min = 0
+  min = 0,
+  savedValue = value
 ) {
   const wrapper = document.createElement('div');
   wrapper.className = 'number-field';
@@ -118,9 +119,16 @@ function numberField(
   slider.step = input.step;
   slider.min = input.min;
   slider.setAttribute('aria-label', `${label} スライダー`);
+  const resetValue = document.createElement('button');
+  resetValue.type = 'button';
+  resetValue.className = 'field-reset';
+  resetValue.textContent = 'リセット';
+  resetValue.setAttribute('aria-label', `${label} を保存済みの値に戻す`);
+  resetValue.title = `保存済みの値: ${savedValue}`;
   syncNumberFields.push(() => {
     input.max = slider.max = String(typeof max === 'function' ? max() : max);
     if (Number.isFinite(input.valueAsNumber)) slider.value = input.value;
+    resetValue.disabled = input.valueAsNumber === savedValue;
   });
   const apply = () => {
     update(input.valueAsNumber);
@@ -132,6 +140,7 @@ function numberField(
       valid = false;
       showError(new Error('座標と幅には数値を入力してください。'));
       save.disabled = download.disabled = true;
+      resetValue.disabled = false;
       return;
     }
     apply();
@@ -140,7 +149,11 @@ function numberField(
     input.value = slider.value;
     apply();
   });
-  wrapper.append(caption, input, slider);
+  resetValue.addEventListener('click', () => {
+    input.value = String(savedValue);
+    apply();
+  });
+  wrapper.append(caption, input, slider, resetValue);
   parent.append(wrapper);
 }
 
@@ -159,6 +172,7 @@ function selectLetter(letter: string) {
   syncNumberFields = [];
   element('selected-letter').textContent = letterName(letter);
   const glyph = draft[letter]!;
+  const saved = baseline[letter]!;
   numberField(
     group('幅'),
     '幅',
@@ -172,9 +186,16 @@ function selectLetter(letter: string) {
         delete glyph.width;
       else glyph.width = value;
     },
-    20
+    20,
+    saved.width ?? 100
   );
   if (glyph.outline) {
+    const savedOutline = saved.outline ?? [
+      [0, 0],
+      [saved.width ?? 100, 0],
+      [saved.width ?? 100, 140],
+      [0, 140],
+    ];
     const outline = group('輪郭の頂点');
     glyph.outline.forEach((point, index) => {
       const row = document.createElement('div');
@@ -186,11 +207,21 @@ function selectLetter(letter: string) {
         () => glyph.width ?? 100,
         (value) => {
           point[0] = value;
-        }
+        },
+        0,
+        savedOutline[index]?.[0] ?? point[0]
       );
-      numberField(row, `${index + 1} · Y`, point[1], 140, (value) => {
-        point[1] = value;
-      });
+      numberField(
+        row,
+        `${index + 1} · Y`,
+        point[1],
+        140,
+        (value) => {
+          point[1] = value;
+        },
+        0,
+        savedOutline[index]?.[1] ?? point[1]
+      );
       outline.append(row);
     });
   } else if (letter !== ' ') {
@@ -218,6 +249,7 @@ function selectLetter(letter: string) {
   if (glyph.marks) {
     const marks = group('切れ込みの座標');
     const tokens = glyph.marks.match(/[MLHV]|\d+(?:\.\d+)?| +/g)!;
+    const savedTokens = saved.marks?.match(/[MLHV]|\d+(?:\.\d+)?| +/g);
     let axis = 'X';
     let command = '';
     let segment = 0;
@@ -235,7 +267,9 @@ function selectLetter(letter: string) {
           (value) => {
             tokens[index] = String(value);
             glyph.marks = tokens.join('');
-          }
+          },
+          0,
+          Number(savedTokens?.[index] ?? token)
         );
         axis = 'Y';
       }
