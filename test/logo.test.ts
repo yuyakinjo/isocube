@@ -107,6 +107,7 @@ describe('generator', () => {
       ['hello12', undefined, '21OLLEH'],
       ['decopin', [4], 'NIPO\nCED'],
       ['ab\nc12', undefined, '21C\nBA'],
+      ['ab cd', [3], 'DC \nBA'],
       ['a', undefined, 'A'],
     ] as const) {
       assert.deepEqual(
@@ -137,12 +138,35 @@ describe('generator', () => {
       first.svg
     );
   });
+  it('preserves spaces as blank blocks without drawing faces or sides', () => {
+    const colors = ['#f00', '#0f0', '#00f'];
+    const { svg, lines } = generateLogo({ text: 'd  a ', colors });
+    assert.deepEqual(lines, ['D  A ']);
+    assert.match(svg, /viewBox="0 0 564 204"/);
+    assert.equal(svg.match(/data-letter=/g)?.length, 2);
+    assert.match(svg, /translate\(312 52\)" data-letter="A"/);
+    assert.equal(fillAt(svg, 200, 120), undefined);
+    assert.equal(fillAt(svg, 310, 120), undefined); // no D notch across a space
+    assert.equal(fillAt(svg, 330, 120), '#FF0000');
+    assert.equal(fillAt(svg, 500, 120), undefined);
+    const leading = generateLogo({ text: ' A', colors }).svg;
+    assert.match(leading, /translate\(112 52\)" data-letter="A"/);
+    assert.equal(fillAt(leading, 30, 120), undefined);
+    assert.equal(fillAt(leading, 130, 120), '#00FF00');
+    const first = generateLogo({ text: 'HELLO WORLD' });
+    assert.equal(
+      generateLogo({ text: 'HELLO WORLD', colors: first.colors }).svg,
+      first.svg
+    );
+  });
   it('rejects invalid text, wraps, and colors', () => {
     for (const text of [
       '',
       '日本語',
       '<svg>',
-      'A B',
+      'A\tB',
+      'A\u00a0B',
+      'A\u3000B',
       'ß',
       '\nA',
       'A\n',
