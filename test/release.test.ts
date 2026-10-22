@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 
 import { calver } from '../scripts/next-version.ts';
 import { parseLog, releaseNotes } from '../scripts/release-notes.ts';
@@ -24,6 +29,46 @@ describe('release version', () => {
 });
 
 describe('release notes', () => {
+  it('excludes published work when version commits exist only on release tags', () => {
+    const cwd = mkdtempSync(join(tmpdir(), 'isocube-release-'));
+    const git = (...args: string[]) =>
+      execFileSync('git', args, { cwd, encoding: 'utf8', stdio: 'pipe' });
+    const notes = () =>
+      execFileSync(
+        process.execPath,
+        [
+          fileURLToPath(
+            new URL('../scripts/release-notes.ts', import.meta.url)
+          ),
+        ],
+        { cwd, encoding: 'utf8' }
+      );
+
+    try {
+      git('init', '--initial-branch=main');
+      git('config', 'user.name', 'Release test');
+      git('config', 'user.email', 'release@example.com');
+      git('config', 'commit.gpgsign', 'false');
+      git('config', 'tag.gpgsign', 'false');
+      git('commit', '--allow-empty', '-m', 'feat: initial release');
+      assert.equal(notes(), '## Changes\n\n- feat: initial release\n');
+
+      git('tag', 'v0.1.0');
+      git('commit', '--allow-empty', '-m', 'fix: first change');
+      assert.equal(notes(), '## Changes\n\n- fix: first change\n');
+
+      git('checkout', '--detach');
+      git('commit', '--allow-empty', '-m', 'chore: release 2026.1022.41');
+      git('tag', 'v2026.1022.41');
+      git('checkout', 'main');
+      git('commit', '--allow-empty', '-m', 'fix: second change');
+      git('tag', 'preview');
+      assert.equal(notes(), '## Changes\n\n- fix: second change\n');
+    } finally {
+      rmSync(cwd, { recursive: true, force: true });
+    }
+  });
+
   it('retains multiple commits and highlights breaking changes before the list', () => {
     const commits = parseLog(
       'feat(cli)!: rename option\n\nBREAKING CHANGE: Use --text instead.\n\0\nfix: keep colors\n\0\nfeat!: remove alias\n\0'

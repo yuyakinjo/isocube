@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 
 export interface Commit {
   subject: string;
@@ -44,17 +44,12 @@ export function parseLog(log: string): Commit[] {
 }
 
 if (import.meta.main) {
-  const described = spawnSync(
+  // Version commits live on release tags, outside the default branch's history.
+  // Exclude everything reachable from those tags to retain only unreleased work.
+  const log = execFileSync(
     'git',
-    ['describe', '--tags', '--match', 'v[0-9]*', '--abbrev=0'],
-    {
-      encoding: 'utf8',
-    }
+    ['log', '--format=%B%x00', 'HEAD', '--not', '--tags=v[0-9]*'],
+    { encoding: 'utf8' }
   );
-  const range =
-    described.status === 0 ? `${described.stdout.trim()}..HEAD` : 'HEAD';
-  const log = execFileSync('git', ['log', range, '--format=%B%x00'], {
-    encoding: 'utf8',
-  });
   process.stdout.write(releaseNotes(parseLog(log)));
 }
