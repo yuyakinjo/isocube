@@ -697,3 +697,175 @@ footer > span:first-child {
 .alphabet-back {
   margin: 25px 0 55px;
 }
+
+.letter-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 20px 26px;
+  border-bottom: 1px solid var(--border);
+}
+.letter-picker button,
+.editor-button {
+  font: inherit;
+  font-size: 12px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+}
+.letter-picker button[aria-pressed='true'] {
+  background: var(--accent-surface);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.letter-picker button.modified {
+  box-shadow: inset 0 -3px #d97706;
+}
+#edit-status {
+  font-size: 12px;
+  color: var(--accent);
+  overflow-wrap: anywhere;
+  max-width: 70%;
+}
+.editor-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+}
+#glyph-form {
+  border-right: 1px solid var(--border);
+}
+#selected-letter {
+  margin: 0;
+  font-size: 32px;
+}
+#glyph-fields fieldset {
+  min-width: 0;
+  margin: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 14px;
+}
+#glyph-fields legend {
+  font-size: 12px;
+  color: var(--muted);
+}
+.number-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 85px;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  min-width: 0;
+}
+#glyph-fields .number-field label {
+  margin: 0;
+}
+#glyph-fields input {
+  padding: 8px;
+}
+#glyph-fields input[type='range'] {
+  grid-column: 1 / -1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  height: 24px;
+  border: 0;
+  box-shadow: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+#glyph-fields input[type='range']:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.coordinate-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.coordinate-row .number-field {
+  grid-template-columns: minmax(0, 1fr);
+}
+.editor-previews {
+  min-width: 0;
+  padding: 24px;
+}
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.comparison figure {
+  margin: 0;
+  min-width: 0;
+}
+.comparison figcaption {
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.editor-previews .preview {
+  padding: 16px;
+  min-height: 220px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: auto;
+}
+.editor-previews svg {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+}
+.context-preview input {
+  margin-bottom: 14px;
+}
+.editor-save {
+  border-top: 1px solid var(--border);
+  padding: 24px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.import-label {
+  margin: 0;
+  cursor: pointer;
+}
+.import-label input {
+  width: 160px;
+  padding: 0;
+  border: 0;
+  font-size: 10px;
+}
+#editor-error {
+  color: var(--error-text);
+  background: var(--error-surface);
+  padding: 16px;
+  margin: 16px;
+}
+@media (max-width: 800px) {
+  .editor-layout {
+    grid-template-columns: 1fr;
+  }
+  #glyph-form {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .editor-previews {
+    padding: 16px;
+  }
+  .editor-previews .preview {
+    min-height: 160px;
+  }
+  .header-actions {
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}

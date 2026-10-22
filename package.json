@@ -48,7 +48,8 @@
     "prepack": "bun run build",
     "version:next": "bun scripts/next-version.ts",
     "build:site": "bun scripts/build-site.ts",
-    "dev:site": "bun scripts/serve-site.ts"
+    "dev:site": "bun scripts/serve-site.ts",
+    "dev:editor": "bun scripts/serve-site.ts --editor"
   },
   "devDependencies": {
     "@types/bun": "^1.4.2",

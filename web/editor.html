@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="文字ごとの幅・輪郭・切れ込みを調整して、設定を保存。"
+    />
+    <title>Isocube — Glyph Editor</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <script>
+      try {
+        const saved = localStorage.getItem('isocube-theme');
+        document.documentElement.dataset.theme =
+          saved === 'light' || saved === 'dark'
+            ? saved
+            : matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+      } catch {
+        document.documentElement.dataset.theme = matchMedia(
+          '(prefers-color-scheme: dark)'
+        ).matches
+          ? 'dark'
+          : 'light';
+      }
+    </script>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./editor.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./"
+        ><img
+          class="brand-mark"
+          src="./isocube.svg"
+          alt="isocube"
+          width="112"
+          height="31"
+        />
+        <span class="badge">GLYPH EDITOR</span></a
+      >
+      <div class="header-actions">
+        <a class="site-link" href="./">Playground</a>
+        <div class="theme-options" role="group" aria-label="Site theme">
+          <button type="button" data-theme="light" aria-pressed="false">
+            ☀ Light</button
+          ><button type="button" data-theme="dark" aria-pressed="false">
+            ☾ Dark
+          </button>
+        </div>
+        <a
+          class="github"
+          href="https://github.com/yuyakinjo/isocube"
+          aria-label="GitHub repository"
+          ><svg
+            viewBox="0 0 16 16"
+            width="20"
+            height="20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              d="M8 0c-4.42 0-8 3.58-8 8a8.013 8.013 0 0 0 5.47 7.59c.4.08.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+            ></path></svg
+        ></a>
+      </div>
+    </header>
+    <main>
+      <section class="hero">
+        <p class="eyebrow"><span></span> GLYPH EDITOR</p>
+        <h1>一文字ずつ、<br /><span>形を整える。</span></h1>
+        <p class="intro">
+          文字を選んで、幅・輪郭・切れ込みを調整。<br />プレビューで確認して、設定を保存できます。
+        </p>
+      </section>
+      <section class="workspace" aria-labelledby="editor-heading">
+        <div class="section-bar">
+          <h2 id="editor-heading">文字の調整</h2>
+          <span id="edit-status" role="status" aria-live="polite"
+            >変更なし</span
+          >
+        </div>
+        <div
+          id="letter-picker"
+          class="letter-picker"
+          role="group"
+          aria-label="調整する文字"
+        ></div>
+        <div class="editor-layout">
+          <form id="glyph-form" novalidate>
+            <h3 id="selected-letter">A</h3>
+            <p class="help">
+              正面の高さは140。座標は左上が (0, 0)、右・下方向が正です。
+            </p>
+            <div id="glyph-fields"></div>
+            <button id="reset-letter" class="editor-button" type="button">
+              この文字を元に戻す
+            </button>
+          </form>
+          <div class="editor-previews">
+            <div class="comparison">
+              <figure>
+                <figcaption>保存済み</figcaption>
+                <div
+                  id="before-preview"
+                  class="preview"
+                  data-background="grid"
+                ></div>
+              </figure>
+              <figure>
+                <figcaption>調整後</figcaption>
+                <div
+                  id="after-preview"
+                  class="preview"
+                  data-background="grid"
+                ></div>
+              </figure>
+            </div>
+            <div class="context-preview">
+              <label for="sample-text">並べて確認</label>
+              <input
+                id="sample-text"
+                value="ISOCUBE"
+                maxlength="64"
+                spellcheck="false"
+              />
+              <div
+                id="context-preview"
+                class="preview"
+                data-background="grid"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <p id="editor-error" role="alert" hidden></p>
+        <div class="editor-save">
+          <p id="save-help">
+            設定ファイルをダウンロードして、src/glyphs.json
+            を置き換えてください。
+          </p>
+          <div class="editor-actions">
+            <button id="save-source" class="primary" type="button" hidden>
+              リポジトリに保存
+            </button>
+            <button id="export-config" class="download" type="button" disabled>
+              設定をダウンロード
+            </button>
+            <label class="editor-button import-label"
+              >設定を読み込む<input
+                id="import-config"
+                type="file"
+                accept=".json,application/json"
+            /></label>
+            <button id="reset-all" class="editor-button" type="button" disabled>
+              すべて元に戻す
+            </button>
+          </div>
+          <p id="save-status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+      <section class="terminal" aria-label="設定の反映手順">
+        <div>保存後の変更を確認して、Gitで共有</div>
+        <pre><code>git diff -- src/glyphs.json
+bun run ci
+git add src/glyphs.json
+git commit -m "fix: adjust glyph geometry"
+git push</code></pre>
+        <p class="help">プッシュした差分をもとに、追加の修正を依頼できます。</p>
+      </section>
+    </main>
+    <footer>
+      <span>isocube</span><a href="./">← Playground</a
+      ><a href="./alphabet.html">A–Z</a>
+    </footer>
+  </body>
+</html>

@@ -2,19 +2,39 @@ import { watch } from 'node:fs';
 import { resolve, sep } from 'node:path';
 
 import { buildSite } from './build-site.ts';
+import { glyphRequest } from './glyph-store.ts';
 
 const root = resolve(import.meta.dirname, '../site-dist');
+const editorMode = process.argv.includes('--editor');
 const sources = resolve(import.meta.dirname, '../web');
 const reloadScript = `<script>new EventSource("/__reload").onmessage = () => location.reload();</script>`;
 const listeners = new Set<ReadableStreamDefaultController<Uint8Array>>();
+let savingGlyphs = false;
 
 await buildSite();
 
 const server = Bun.serve({
   hostname: '127.0.0.1',
-  port: Number(process.env.PORT ?? 3333),
+  port: Number(process.env.PORT ?? (editorMode ? 3334 : 3333)),
   async fetch(request) {
     const pathname = decodeURIComponent(new URL(request.url).pathname);
+    if (pathname === '/__glyphs') {
+      if (savingGlyphs)
+        return new Response('保存中です。もう一度お試しください。', {
+          status: 409,
+        });
+      savingGlyphs = true;
+      try {
+        const response = await glyphRequest(
+          request,
+          new URL('../src/glyphs.json', import.meta.url)
+        );
+        if (response.ok && request.method === 'PUT') await buildSite();
+        return response;
+      } finally {
+        savingGlyphs = false;
+      }
+    }
     if (pathname === '/__reload') {
       let listener: ReadableStreamDefaultController<Uint8Array>;
       return new Response(
@@ -70,4 +90,8 @@ watch(sources, { recursive: true }, () => {
   }, 50);
 });
 
-console.log(`Playground: ${server.url}`);
+console.log(
+  editorMode
+    ? `Glyph Editor: ${new URL('editor.html', server.url)}`
+    : `Playground: ${server.url}`
+);

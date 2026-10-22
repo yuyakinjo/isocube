@@ -1,13 +1,18 @@
-import { mkdir, copyFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, copyFile, rm, writeFile, readFile } from 'node:fs/promises';
 
-import { generateLogo } from '../src/index.js';
+import { generateLogo, parseGlyphConfig } from '../src/index.js';
 
 export async function buildSite() {
+  const glyphs = parseGlyphConfig(
+    JSON.parse(
+      await readFile(new URL('../src/glyphs.json', import.meta.url), 'utf8')
+    )
+  );
   const destination = new URL('../site-dist/', import.meta.url);
   await rm(destination, { recursive: true, force: true });
   await mkdir(destination, { recursive: true });
   const result = await Bun.build({
-    entrypoints: ['app.ts', 'theme.ts'].map(
+    entrypoints: ['app.ts', 'theme.ts', 'editor.ts'].map(
       (file) => new URL(`../web/${file}`, import.meta.url).pathname
     ),
     outdir: destination.pathname,
@@ -16,15 +21,21 @@ export async function buildSite() {
   });
   if (!result.success)
     throw new AggregateError(result.logs, 'Site build failed');
-  for (const file of ['index.html', 'alphabet.html', 'style.css']) {
+  for (const file of [
+    'index.html',
+    'alphabet.html',
+    'editor.html',
+    'style.css',
+  ]) {
     await copyFile(
       new URL(`../web/${file}`, import.meta.url),
       new URL(file, destination)
     );
   }
-  const favicon = generateLogo({ text: 'i', colors: ['#B429F9'] });
+  const favicon = generateLogo({ text: 'i', colors: ['#B429F9'], glyphs });
   await writeFile(new URL('favicon.svg', destination), favicon.svg);
   const alphabet = generateLogo({
+    glyphs,
     text: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
     breakAt: [7, 14, 21],
     colors: [
