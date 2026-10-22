@@ -7,6 +7,55 @@
     "typescript/no-explicit-any": "warn",
     "typescript/no-non-null-assertion": "off"
   },
+  "overrides": [
+    {
+      "files": ["src/**/*.ts"],
+      "rules": {
+        "typescript/no-require-imports": "error",
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "(^|/)\\.\\.(/|$)|\\\\",
+                "message": "Keep SVG generation dependencies inside src; parent-directory imports are not allowed."
+              },
+              {
+                "group": ["**", "!./**"],
+                "message": "SVG generation must only import local source modules; web, editor, scripts and external packages are not allowed."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/cli.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "(^|/)\\.\\.(/|$)|\\\\",
+                "message": "Keep CLI dependencies inside src; parent-directory imports are not allowed."
+              },
+              {
+                "group": [
+                  "**",
+                  "!./**",
+                  "!node:fs/promises",
+                  "!node:path",
+                  "!node:util"
+                ],
+                "message": "The CLI may only import local source modules and its approved Node built-ins; web, editor, scripts and external packages are not allowed."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
   "env": {
     "builtin": true,
     "node": true

@@ -113,6 +113,23 @@ glyphs.A.marks = 'M50 30V65 M50 100V140';
 const { svg } = generateLogo({ text: 'SAMPLE', glyphs, colors: ['#2D00F7'] });
 ```
 
+## Dependency boundaries
+
+`src/` contains only the SVG generator and CLI. Oxlint rejects imports of
+external packages and parent-directory modules from this directory, including
+type-only imports, re-exports, and literal dynamic imports. Computed dynamic
+imports such as `import(variable)` are not checked. Use `./` imports for source modules; nested
+modules can import siblings and children, but cannot use `../` imports.
+Only `src/cli.ts` may additionally import `node:fs/promises`, `node:path`, and
+`node:util` for argument parsing and saving SVG files. CommonJS `require()`
+imports are also rejected.
+
+Keep browser UI, animations, and editor code in `web/`, and site tooling in
+`scripts/`. These directories can import the generator; the generator and CLI
+cannot import them. Run `bun run lint` to check these boundaries, or `bun run ci`
+for all checks. This enforces module dependencies, not whether arbitrary code
+inside an allowed module is relevant to SVG generation.
+
 ## License
 
 MIT

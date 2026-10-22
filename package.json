@@ -38,7 +38,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit && tsc -p web/tsconfig.json",
+    "typecheck": "tsc --noEmit && tsc -p web/tsconfig.json && tsc -p test/tsconfig.json && tsc -p scripts/tsconfig.json",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
