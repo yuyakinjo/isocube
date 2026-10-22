@@ -4,7 +4,7 @@
     "noEmit": true,
     "rootDir": "..",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": []
+    "types": ["bun-types/devserver"]
   },
-  "include": ["./app.ts", "../src/index.ts"]
+  "include": ["./*.ts", "../src/index.ts"]
 }

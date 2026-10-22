@@ -1,0 +1,3 @@
+[serve.static]
+# Generated and example SVGs are served by scripts/serve-site.ts, not bundled.
+plugins = ["./scripts/external-svg.ts"]

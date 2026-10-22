@@ -77,6 +77,59 @@ TypeScript declarations are included.
 
 Pass `reverse: true` to reverse the input before applying `breakAt`, just like the CLI's `--reverse` option.
 
+## Adjust individual letters
+
+Start the editor:
+
+```sh
+bun run dev:editor
+```
+
+Open <http://127.0.0.1:3334/editor.html> (also printed in the terminal). Set `PORT` to use a different port, for example `PORT=4000 bun run dev:editor`. The playground remains available through `bun run dev:site` on port 3333, with a **Glyph Editor** link.
+
+Select A–Z, 0–9, or Space and edit its width, outline vertices, and cut-line coordinates. Each value has one number input and one synchronized slider, with 0.1-unit steps, plus a reset button that restores that value to its saved setting. The editor shows the saved and edited letter side by side, plus a sample word. On desktop, the controls match the preview panel's height and scroll independently so the preview stays visible while editing lower fields. Colors stay fixed while editing so shape changes are easy to compare.
+
+Click **リポジトリに保存** to write `src/glyphs.json` from the local editor. On the published site, download `glyphs.json` and replace `src/glyphs.json` in your checkout. You can also import a downloaded configuration to continue editing. The editor lists changed characters and supports resetting one letter or all edits. Saving refuses to overwrite a file changed elsewhere since the page was loaded.
+
+Review and share the changes:
+
+```sh
+git diff -- src/glyphs.json
+bun run ci
+git add src/glyphs.json
+git commit -m "fix: adjust glyph geometry"
+git push
+```
+
+The shared JSON configuration supplies the CLI, JavaScript API, playground, and alphabet page after rebuilding. Coordinates use a front face of height 140; X runs right and Y runs down. Width must be 20–240, X must fit the letter width, and Y must be 0–140. Cut lines use absolute `M`, `L`, `H`, and `V` SVG commands. Space has only a width. Letters without an explicit outline use the existing rectangle and D-joining behavior.
+
+For an in-memory preview, pass a complete configuration through the JavaScript API:
+
+```js
+import { generateLogo, getDefaultGlyphs } from 'isocube';
+
+const glyphs = getDefaultGlyphs();
+glyphs.A.marks = 'M50 30V65 M50 100V140';
+const { svg } = generateLogo({ text: 'SAMPLE', glyphs, colors: ['#2D00F7'] });
+```
+
+## Dependency boundaries
+
+`src/` contains only the SVG generator and CLI. Oxlint rejects imports of
+external packages and parent-directory modules from this directory, including
+type-only imports, re-exports, and literal dynamic imports. Computed dynamic
+imports such as `import(variable)` are not checked. Use `./` imports for source modules; nested
+modules can import siblings and children, but cannot use `../` imports.
+Only `src/cli.ts` may additionally import `node:fs/promises`, `node:path`, and
+`node:util` for argument parsing and saving SVG files. CommonJS `require()`
+imports are also rejected.
+
+Keep browser UI, animations, and editor code in `web/`, and site tooling in
+`scripts/`. These directories can import the generator; the generator and CLI
+cannot import them. Run `bun run lint` to check these boundaries, or `bun run ci`
+for all checks. This enforces module dependencies, not whether arbitrary code
+inside an allowed module is relevant to SVG generation.
+
 ## License
 
 MIT
