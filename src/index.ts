@@ -6,6 +6,7 @@ interface Glyph {
 
 // 100×140 の正面。黒い切れ込みと輪郭で文字を描く。
 const GLYPHS: Record<string, Glyph> = {
+  ' ': { width: 100 },
   A: { marks: 'M50 35V65 M50 100V140' },
   B: { marks: 'M50 30V50 M50 90V110 M80 70H100' },
   C: { marks: 'M55 70H100' },
@@ -220,8 +221,10 @@ export function generateLogo(options: LogoOptions): {
   colors: string[];
 } {
   // Unicode の大文字展開 (ß → SS など) を暗黙に受け入れない。
-  if (!/^[a-z0-9\n]+$/i.test(options.text) || options.text.length > 256) {
-    throw new Error('Enter 1–256 ASCII letters, digits, or line breaks.');
+  if (!/^[a-z0-9 \n]+$/i.test(options.text) || options.text.length > 256) {
+    throw new Error(
+      'Enter 1–256 ASCII letters, digits, spaces, or line breaks.'
+    );
   }
   const uppercase = options.text.toUpperCase();
   const text = options.reverse ? [...uppercase].reverse().join('') : uppercase;
@@ -279,6 +282,10 @@ export function generateLogo(options: LogoOptions): {
       const spec = glyph(letter);
       const w = spec.width ?? 100;
       const color = colors[colorIndex++]!;
+      if (letter === ' ') {
+        x += w;
+        continue;
+      }
       // 正面と押し出しに同じ輪郭を使い、切り欠きの内側にも面を付ける。
       // D の斜めの右端に次のブロックをかみ合わせる。
       const outline =
