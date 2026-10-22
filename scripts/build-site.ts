@@ -38,6 +38,8 @@ export async function buildSite() {
   if (!result.success)
     throw new AggregateError(result.logs, 'Site build failed');
   await copyStaticAssets(web, destination);
+  const favicon = generateLogo({ text: 'i', colors: ['#B429F9'] });
+  await writeFile(new URL('favicon.svg', destination), favicon.svg);
   const alphabet = generateLogo({
     text: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
     breakAt: [7, 14, 21],
