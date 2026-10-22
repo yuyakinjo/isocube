@@ -22,6 +22,18 @@ Reverse the text: HELLO becomes OLLEH.
 npx isocube --text HELLO --reverse --out output/reverse.svg
 ```
 
+Keep a space between words on one row. Quote the text to preserve spaces.
+
+```sh
+npx isocube --text 'hello world' \
+  --colors '#2D00F7,#E500A4,#F20089,#FFB600,#6A00F4,#8900F2,#BC00DD' \
+  --out output/hello-world-single-row.svg
+```
+
+![HELLO WORLD in one row with a space between words](examples/hello-world-single-row.svg)
+
+An ASCII space (U+0020) leaves half a standard letter-width gap; a full-width space (U+3000) leaves a full letter-width gap. Leading, trailing, and repeated spaces are preserved, and spaces do not consume colors. Both types count as one character for `--break-at`. Each row must contain at least one letter or digit.
+
 Two rows: hello / world.
 
 ```sh
@@ -53,9 +65,9 @@ npx isocube --text ABCDEFGHIJKLMNOPQRSTUVWXYZ --break-at 7,14,21 \
 
 | Option       | Description                                                                                                                                                            |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--text`     | Required. 1–256 letters (A–Z, hiragana, katakana), digits, or actual newlines. Lowercase becomes uppercase. No spaces or other characters.                             |
+| `--text`     | Required. 1–256 letters (A–Z, hiragana, katakana), digits, spaces, or actual newlines. Lowercase becomes uppercase.                                                    |
 | `--reverse`  | Reverse the entire input, including newlines, before applying `--break-at`. Colors follow the resulting character order. Defaults to off.                              |
-| `--break-at` | Optional ascending cumulative character positions, e.g. `4` or `3,6`. Cannot be combined with embedded newlines.                                                       |
+| `--break-at` | Optional ascending cumulative character positions (including spaces), e.g. `4` or `3,6`. Cannot be combined with embedded newlines.                                    |
 | `--colors`   | Optional comma-separated `#RGB`, `#RRGGBB`, or `rgb(r,g,b)` colors. A short palette repeats across rows. Defaults to independent random RGB values for each character. |
 | `--out`      | SVG output path. Default: `output/logo.svg`. Existing files are overwritten.                                                                                           |
 | `--force`    | Accepted for compatibility. Existing files are overwritten by default.                                                                                                 |
@@ -63,7 +75,7 @@ npx isocube --text ABCDEFGHIJKLMNOPQRSTUVWXYZ --break-at 7,14,21 \
 
 ## Hiragana and katakana
 
-Generate kana with the same CLI and JavaScript API. Both scripts support the 46 basic kana, voiced and semi-voiced forms (including ゔ / ヴ), small kana, and the long vowel mark ー. Katakana also supports ヷ / ヺ. Kanji, half-width kana, historical ゐ / ゑ / ヰ / ヱ, spaces, and punctuation are not supported.
+Generate kana with the same CLI and JavaScript API. Both scripts support the 46 basic kana, voiced and semi-voiced forms (including ゔ / ヴ), small kana, and the long vowel mark ー. Katakana also supports ヷ / ヺ. Kanji, half-width kana, historical ゐ / ゑ / ヰ / ヱ, and punctuation are not supported.
 
 ```sh
 npx isocube --text 'こんにちは' --out output/hiragana.svg

@@ -134,10 +134,63 @@ describe('generator', () => {
       ['ABC', 'DEF', 'GHI']
     );
   });
+  it('preserves spaces as transparent gaps without consuming colors', () => {
+    for (const [text, width, secondX] of [
+      ['A B', 314, 162],
+      ['A  B', 364, 212],
+      [' A B ', 414, 212],
+      ['A\u3000B', 364, 212],
+      ['A\u3000\u3000B', 464, 312],
+      ['\u3000A\u3000B\u3000', 564, 312],
+      ['A \u3000B', 414, 262],
+    ] as const) {
+      const { svg, lines, colors } = generateLogo({
+        text,
+        colors: ['#f00', '#0f0', '#00f'],
+      });
+      assert.deepEqual(lines, [text]);
+      assert.deepEqual(colors, ['#FF0000', '#00FF00']);
+      assert.match(svg, new RegExp(`viewBox="0 0 ${width} 204"`));
+      assert.match(
+        svg,
+        new RegExp(`translate\\(${secondX} 52\\)" data-letter="B"`)
+      );
+      assert.equal(svg.match(/data-letter=/g)?.length, 2);
+      assert.equal(fillAt(svg, secondX - 5, 100), undefined);
+      assert.equal(fillAt(svg, secondX + 20, 100), '#00FF00');
+    }
+    const first = generateLogo({ text: 'hello world' });
+    assert.deepEqual(first.lines, ['HELLO WORLD']);
+    assert.equal(first.colors.length, 10);
+    assert.equal(
+      generateLogo({ text: 'hello world', colors: first.colors }).svg,
+      first.svg
+    );
+    const separated = generateLogo({ text: 'D A', colors: ['#f00'] }).svg;
+    assert.equal(fillAt(separated, 157, 100), undefined);
+  });
+  it('counts spaces in break positions and preserves them across rows', () => {
+    const colors = ['#f00', '#0f0', '#00f'];
+    for (const space of [' ', '\u3000']) {
+      assert.deepEqual(
+        generateLogo({ text: `A${space}B${space}C`, breakAt: [2], colors }),
+        generateLogo({ text: `A${space}\nB${space}C`, colors })
+      );
+    }
+    const { svg } = generateLogo({ text: 'A\n B\n\u3000C', colors });
+    assert.equal(fillAt(svg, 40, 250), undefined);
+    assert.equal(fillAt(svg, 82, 250), '#00FF00');
+    assert.equal(fillAt(svg, 80, 390), undefined);
+    assert.equal(fillAt(svg, 132, 390), '#0000FF');
+  });
   it('reverses the input before wrapping and assigning colors', () => {
     const colors = ['#f00', '#0f0', '#00f'];
     for (const [text, breakAt, expected] of [
       ['hello12', undefined, '21OLLEH'],
+      ['hello world', undefined, 'DLROW OLLEH'],
+      ['hello\u3000world', undefined, 'DLROW\u3000OLLEH'],
+      ['a \u3000b', undefined, 'B\u3000 A'],
+      [' a  b ', [3], ' B \n A '],
       ['decopin', [4], 'NIPO\nCED'],
       ['ab\nc12', undefined, '21C\nBA'],
       ['a', undefined, 'A'],
@@ -318,7 +371,12 @@ describe('generator', () => {
       '',
       '日本語',
       '<svg>',
-      'A B',
+      ' ',
+      'A\n  \nB',
+      'A\tB',
+      '\u3000',
+      'A\n \u3000\nB',
+      'A\u00a0B',
       'ß',
       '\nA',
       'A\n',
@@ -359,6 +417,28 @@ describe('CLI', () => {
     assert.equal(result.status, 0, result.stderr);
     assert.match(result.stdout, /isocube --text/);
     assert.match(result.stdout, /--reverse/);
+  });
+  it('writes text containing spaces without joining words', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'isocube-spaces-'));
+    try {
+      const output = join(dir, 'logo.svg');
+      const result = run(
+        '--text',
+        'hello world',
+        '--colors',
+        '#f00,#0f0',
+        '--out',
+        output
+      );
+      assert.equal(result.status, 0, result.stderr);
+      assert.match(result.stdout, /HELLO WORLD/);
+      assert.equal(
+        await readFile(output, 'utf8'),
+        generateLogo({ text: 'hello world', colors: ['#f00', '#0f0'] }).svg
+      );
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   });
   it('writes reversed text with --reverse and applies break positions afterward', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'isocube-test-'));

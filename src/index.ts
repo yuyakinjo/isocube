@@ -11,6 +11,8 @@ interface Glyph {
 // 100×140 の正面。黒い切れ込みと輪郭で文字を描く。
 const GLYPHS: Record<string, Glyph> = {
   ...KANA_GLYPHS,
+  ' ': { width: 50 },
+  '\u3000': { width: 100 },
   A: { marks: 'M50 35V65 M50 100V140' },
   B: { marks: 'M50 30V50 M50 90V110 M80 70H100' },
   C: { marks: 'M55 70H100' },
@@ -191,7 +193,7 @@ export interface LogoOptions {
   text: string;
   /** 改行を含む入力全体を逆順にしてから breakAt を適用する。 */
   reverse?: boolean;
-  /** 改行を入れる文字数の累積位置。例: [4] → DECO / PIN */
+  /** スペースを含む文字数で改行を入れる累積位置。例: [4] → DECO / PIN */
   breakAt?: number[];
   /** #RGB / #RRGGBB / rgb(r,g,b)。足りない場合は先頭から繰り返す。 */
   colors?: string[];
@@ -228,7 +230,7 @@ export function generateLogo(options: LogoOptions): {
   // uppercase expansions such as ß → SS before case conversion.
   const normalized = options.text.normalize('NFC');
   if (
-    !/^[a-z0-9\nぁ-ゖァ-ヺー\u3099\u309a]+$/i.test(options.text) ||
+    !/^[a-z0-9 \u3000\nぁ-ゖァ-ヺー\u3099\u309a]+$/i.test(options.text) ||
     normalized.length > 256 ||
     [...normalized].some(
       (letter) =>
@@ -236,7 +238,7 @@ export function generateLogo(options: LogoOptions): {
     )
   ) {
     throw new Error(
-      'Enter 1–256 letters (A–Z, hiragana, katakana), digits, or line breaks.'
+      'Enter 1–256 letters (A–Z, hiragana, katakana), digits, spaces, or line breaks.'
     );
   }
   const uppercase = normalized.toUpperCase();
@@ -266,11 +268,11 @@ export function generateLogo(options: LogoOptions): {
       : [...breaks, text.length].map((end, index) =>
           text.slice(breaks[index - 1] ?? 0, end)
         );
-  if (lines.some((line) => line.length === 0))
+  if (lines.some((line) => line.trim().length === 0))
     throw new Error('Empty lines are not allowed.');
   const palette = options.colors?.map(colorValue);
   if (palette?.length === 0) throw new Error('Specify at least one color.');
-  const count = lines.join('').length;
+  const count = lines.join('').replace(/[ \u3000]/g, '').length;
   const colors = Array.from({ length: count }, (_, index) =>
     palette === undefined ? randomColor() : palette[index % palette.length]!
   );
@@ -294,6 +296,10 @@ export function generateLogo(options: LogoOptions): {
     for (const [column, letter] of [...line].entries()) {
       const spec = glyph(letter);
       const w = spec.width ?? 100;
+      if (letter === ' ' || letter === '\u3000') {
+        x += w;
+        continue;
+      }
       const color = colors[colorIndex++]!;
       // 正面と押し出しに同じ輪郭を使い、切り欠きの内側にも面を付ける。
       // D の斜めの右端に次のブロックをかみ合わせる。
