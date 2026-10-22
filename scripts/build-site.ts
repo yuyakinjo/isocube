@@ -1,60 +1,25 @@
-import { mkdir, copyFile, rm, writeFile, readFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
 
-import { generateLogo, parseGlyphConfig } from '../src/index.js';
+import externalSvg from './external-svg.ts';
+import { siteAssets } from './site-assets.ts';
 
 export async function buildSite() {
-  const glyphs = parseGlyphConfig(
-    JSON.parse(
-      await readFile(new URL('../src/glyphs.json', import.meta.url), 'utf8')
-    )
-  );
   const destination = new URL('../site-dist/', import.meta.url);
   await rm(destination, { recursive: true, force: true });
   await mkdir(destination, { recursive: true });
   const result = await Bun.build({
-    entrypoints: ['app.ts', 'theme.ts', 'editor.ts'].map(
+    entrypoints: ['index.html', 'alphabet.html', 'editor.html'].map(
       (file) => new URL(`../web/${file}`, import.meta.url).pathname
     ),
     outdir: destination.pathname,
     target: 'browser',
     minify: true,
+    plugins: [externalSvg],
   });
   if (!result.success)
     throw new AggregateError(result.logs, 'Site build failed');
-  for (const file of [
-    'index.html',
-    'alphabet.html',
-    'editor.html',
-    'style.css',
-  ]) {
-    await copyFile(
-      new URL(`../web/${file}`, import.meta.url),
-      new URL(file, destination)
-    );
-  }
-  const favicon = generateLogo({ text: 'i', colors: ['#B429F9'], glyphs });
-  await writeFile(new URL('favicon.svg', destination), favicon.svg);
-  const alphabet = generateLogo({
-    glyphs,
-    text: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-    breakAt: [7, 14, 21],
-    colors: [
-      '#2D00F7',
-      '#E500A4',
-      '#F20089',
-      '#FFB600',
-      '#6A00F4',
-      '#8900F2',
-      '#BC00DD',
-    ],
-  });
-  await writeFile(new URL('alphabet.svg', destination), alphabet.svg);
-  for (const file of ['logo.svg', 'isocube.svg']) {
-    await copyFile(
-      new URL(`../examples/${file}`, import.meta.url),
-      new URL(file, destination)
-    );
-  }
+  for (const [file, svg] of Object.entries(await siteAssets()))
+    await writeFile(new URL(file, destination), svg);
 }
 
 if (import.meta.main) {

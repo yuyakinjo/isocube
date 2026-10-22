@@ -1,12 +1,12 @@
 import './theme.js';
-import { CHARACTERS } from '../src/glyphs.js';
 import {
+  CHARACTERS,
   generateLogo,
   getDefaultGlyphs,
   parseGlyphConfig,
   serializeGlyphConfig,
-} from '../src/index.js';
-import type { Glyph, GlyphConfig } from '../src/index.js';
+} from './editor-glyphs.js';
+import type { Glyph, GlyphConfig } from './editor-glyphs.js';
 
 const element = <T extends HTMLElement>(id: string) =>
   document.getElementById(id) as T;
