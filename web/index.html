@@ -8,6 +8,7 @@
       content="Turn text into colorful 3D block logos. Try it in your browser and download a transparent SVG."
     />
     <title>Isocube — Playground</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <script>
       try {
         const saved = localStorage.getItem('isocube-theme');
@@ -144,7 +145,6 @@ HELLOWORLD</textarea>
                 ><input
                   id="break-at"
                   name="break-at"
-                  value="5"
                   placeholder="e.g. 3,6"
                   aria-describedby="break-help"
                 />
@@ -265,7 +265,7 @@ HELLOWORLD</textarea>
           <span class="terminal-dot"></span
           ><span>The same logo, from your terminal.</span>
         </div>
-        <pre><code id="command">npx isocube --text HELLOWORLD --break-at 5</code></pre>
+        <pre><code id="command">npx isocube --text HELLOWORLD</code></pre>
       </section>
     </main>
     <footer>

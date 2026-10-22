@@ -22,6 +22,8 @@ export async function buildSite() {
       new URL(file, destination)
     );
   }
+  const favicon = generateLogo({ text: 'i', colors: ['#B429F9'] });
+  await writeFile(new URL('favicon.svg', destination), favicon.svg);
   const alphabet = generateLogo({
     text: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
     breakAt: [7, 14, 21],
