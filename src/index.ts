@@ -1,190 +1,17 @@
-interface Glyph {
-  width?: number;
-  marks?: string;
-  outline?: readonly (readonly [number, number])[];
-}
+import { defaultGlyphs, parseGlyphConfig } from './glyphs.js';
+import type { Glyph, GlyphConfig } from './glyphs.js';
 
-// 100×140 の正面。黒い切れ込みと輪郭で文字を描く。
-const GLYPHS: Record<string, Glyph> = {
-  ' ': { width: 100 },
-  A: { marks: 'M50 35V65 M50 100V140' },
-  B: { marks: 'M50 30V50 M50 90V110 M80 70H100' },
-  C: { marks: 'M55 70H100' },
-  D: {
-    outline: [
-      [0, 0],
-      [82, 0],
-      [100, 25],
-      [100, 115],
-      [82, 140],
-      [0, 140],
-    ],
-    marks: 'M50 42V98',
-  },
-  E: { marks: 'M55 45H100 M55 95H100' },
-  F: {
-    outline: [
-      [0, 0],
-      [100, 0],
-      [100, 90],
-      [55, 90],
-      [55, 140],
-      [0, 140],
-    ],
-    marks: 'M55 45H100',
-  },
-  G: { marks: 'M100 45H50V95H75' },
-  H: { marks: 'M50 0V45 M50 95V140' },
-  I: { width: 70 },
-  J: {
-    outline: [
-      [50, 0],
-      [100, 0],
-      [100, 140],
-      [0, 140],
-      [0, 95],
-      [50, 95],
-    ],
-  },
-  K: {
-    outline: [
-      [0, 0],
-      [100, 0],
-      [65, 70],
-      [100, 140],
-      [0, 140],
-    ],
-    marks: 'M45 0V35 M45 105V140',
-  },
-  L: {
-    outline: [
-      [0, 0],
-      [55, 0],
-      [55, 100],
-      [100, 100],
-      [100, 140],
-      [0, 140],
-    ],
-  },
-  M: {
-    width: 120,
-    outline: [
-      [15, 0],
-      [105, 0],
-      [120, 140],
-      [0, 140],
-    ],
-    marks: 'M30 140V97.5 M60 0V40 M90 140V97.5',
-  },
-  N: { marks: 'M48 0L56 42 M40 98L48 140' },
-  O: { marks: 'M50 42V98' },
-  P: {
-    outline: [
-      [0, 0],
-      [100, 0],
-      [100, 90],
-      [50, 90],
-      [50, 140],
-      [0, 140],
-    ],
-    marks: 'M42 42H62',
-  },
-  Q: { marks: 'M50 35V80 M58.5 122.5L76 140 M82.5 122.5L100 140' },
-  R: { marks: 'M42 42H62 M50 95L75 140 M80 75H100' },
-  S: { marks: 'M40 45H100 M0 95H60' },
-  T: {
-    outline: [
-      [0, 0],
-      [100, 0],
-      [100, 40],
-      [70, 40],
-      [70, 140],
-      [30, 140],
-      [30, 40],
-      [0, 40],
-    ],
-  },
-  U: { marks: 'M50 0V95' },
-  V: {
-    outline: [
-      [0, 0],
-      [100, 0],
-      [75, 140],
-      [25, 140],
-    ],
-    marks: 'M50 0V42.5',
-  },
-  W: {
-    width: 120,
-    outline: [
-      [0, 0],
-      [120, 0],
-      [105, 140],
-      [15, 140],
-    ],
-    marks: 'M30 0V42.5 M60 140V100 M90 0V42.5',
-  },
-  X: {
-    outline: [
-      [0, 0],
-      [100, 0],
-      [70, 70],
-      [100, 140],
-      [0, 140],
-      [30, 70],
-    ],
-    marks: 'M50 0V25 M50 140V115',
-  },
-  Y: {
-    outline: [
-      [0, 0],
-      [100, 0],
-      [100, 60],
-      [70, 85],
-      [70, 140],
-      [30, 140],
-      [30, 85],
-      [0, 60],
-    ],
-    marks: 'M50 0V45',
-  },
-  // N の線を時計回りに90度回転し、100×140 の文字枠に合わせる。
-  Z: { marks: 'M100 67.2L70 78.4 M30 56L0 67.2' },
-  '0': { marks: 'M50 35V105 M35 85L65 55' },
-  '1': {
-    width: 70,
-    outline: [
-      [0, 25],
-      [30, 0],
-      [70, 0],
-      [70, 140],
-      [20, 140],
-      [20, 45],
-      [0, 45],
-    ],
-  },
-  '2': { marks: 'M0 45H55V70 M45 95H100' },
-  '3': { marks: 'M0 45H55 M0 95H55' },
-  '4': { marks: 'M50 0V50 M0 100H50V140' },
-  '5': { marks: 'M45 45H100 M0 95H55' },
-  '6': { marks: 'M55 40H100 M50 90V110' },
-  '7': {
-    outline: [
-      [0, 0],
-      [100, 0],
-      [100, 45],
-      [65, 140],
-      [15, 140],
-      [50, 45],
-      [0, 45],
-    ],
-  },
-  '8': { marks: 'M50 30V50 M50 90V110' },
-  '9': { marks: 'M50 30V50 M0 100H50' },
-};
+export {
+  getDefaultGlyphs,
+  parseGlyphConfig,
+  serializeGlyphConfig,
+} from './glyphs.js';
+export type { Glyph, GlyphConfig } from './glyphs.js';
 
 export interface LogoOptions {
   text: string;
+  /** 文字ごとの幅・輪郭・切れ込み。省略時は標準設定。 */
+  glyphs?: GlyphConfig;
   /** 改行を含む入力全体を逆順にしてから breakAt を適用する。 */
   reverse?: boolean;
   /** 改行を入れる文字数の累積位置。例: [4] → DECO / PIN */
@@ -261,7 +88,11 @@ export function generateLogo(options: LogoOptions): {
   const colors = Array.from({ length: count }, (_, index) =>
     palette === undefined ? randomColor() : palette[index % palette.length]!
   );
-  const glyph = (letter: string): Glyph => GLYPHS[letter]!;
+  const glyphs =
+    options.glyphs === undefined
+      ? defaultGlyphs
+      : parseGlyphConfig(options.glyphs);
+  const glyph = (letter: string): Glyph => glyphs[letter]!;
   const widths = lines.map((line) =>
     [...line].reduce((sum, letter) => sum + (glyph(letter).width ?? 100), 0)
   );

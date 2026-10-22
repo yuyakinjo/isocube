@@ -6,5 +6,5 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": []
   },
-  "include": ["./app.ts", "../src/index.ts"]
+  "include": ["./*.ts", "../src/index.ts"]
 }
