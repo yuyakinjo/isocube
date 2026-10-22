@@ -96,6 +96,51 @@ describe('glyph configuration', () => {
 });
 
 describe('local glyph saving', () => {
+  it('returns fixed errors without exposing request contents or file paths', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'isocube-glyph-'));
+    const file = pathToFileURL(join(dir, 'private-glyphs.json'));
+    const baseline = serializeGlyphConfig(getDefaultGlyphs());
+    const request = (body?: string) =>
+      new Request('http://127.0.0.1:3333/__glyphs', {
+        method: body === undefined ? 'GET' : 'PUT',
+        headers: {
+          origin: 'http://127.0.0.1:3333',
+          'Content-Type': 'application/json',
+        },
+        body,
+      });
+    try {
+      await writeFile(file, baseline);
+      for (const body of ['private-input', 'null', '{"glyphs":{}}']) {
+        const response = await glyphRequest(request(body), file);
+        assert.equal(response.status, 400);
+        assert.equal(
+          await response.text(),
+          '設定が不正です。JSONと文字の設定を確認してください。'
+        );
+        assert.equal(await readFile(file, 'utf8'), baseline);
+      }
+      const validBody = JSON.stringify({
+        baseline,
+        glyphs: getDefaultGlyphs(),
+      });
+      for (const contents of [undefined, 'private-file-contents']) {
+        if (contents === undefined) await rm(file);
+        else await writeFile(file, contents);
+        for (const body of [undefined, validBody]) {
+          const response = await glyphRequest(request(body), file);
+          assert.equal(response.status, 500);
+          assert.equal(
+            await response.text(),
+            '設定ファイルの読み込みまたは保存に失敗しました。'
+          );
+        }
+      }
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
   it('saves valid changes and refuses stale, invalid, or cross-origin writes', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'isocube-glyph-'));
     const file = pathToFileURL(join(dir, 'glyphs.json'));
